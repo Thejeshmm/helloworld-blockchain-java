@@ -394,7 +394,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         KvDbUtil.KvWriteBatch kvWriteBatch = new KvDbUtil.KvWriteBatch();
 
         storeHash(kvWriteBatch,block, blockchainAction);
-        storeAddress(kvWriteBatch,block, blockchainAction);
 
         storeBlockchainHeight(kvWriteBatch,block, blockchainAction);
         storeBlockchainTransactionHeight(kvWriteBatch,block, blockchainAction);
@@ -686,27 +685,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         }
     }
 
-    /**
-     * 存储已使用的地址
-     */
-    private void storeAddress(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
-        List<Transaction> transactions = block.getTransactions();
-        if(transactions != null){
-            for(Transaction transaction:transactions){
-                List<TransactionOutput> outputs = transaction.getOutputs();
-                if(outputs != null){
-                    for(TransactionOutput output:outputs){
-                        byte[] addressKey = BlockchainDatabaseKeyTool.buildAddressKey(output.getAddress());
-                        if(BlockchainAction.ADD_BLOCK == blockchainAction){
-                            kvWriteBatch.put(addressKey, addressKey);
-                        } else {
-                            kvWriteBatch.delete(addressKey);
-                        }
-                    }
-                }
-            }
-        }
-    }
     /**
      * 存储地址到未花费交易输出列表
      */
