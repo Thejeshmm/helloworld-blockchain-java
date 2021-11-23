@@ -143,11 +143,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             LogUtil.debug("区块数据异常，区块中新产生的哈希异常。");
             return false;
         }
-        //校验新产生的地址
-        if(!checkBlockNewAddress(block)){
-            LogUtil.debug("区块数据异常，区块中新产生的哈希异常。");
-            return false;
-        }
         //校验双花
         if(!checkBlockDoubleSpend(block)){
             LogUtil.debug("区块数据异常，检测到双花攻击。");
@@ -201,11 +196,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         //业务校验
         //校验新产生的哈希
         if(!checkTransactionNewHash(transaction)){
-            LogUtil.debug("区块数据异常，区块中新产生的哈希异常。");
-            return false;
-        }
-        //校验新产生的地址
-        if(!checkTransactionNewAddress(transaction)){
             LogUtil.debug("区块数据异常，区块中新产生的哈希异常。");
             return false;
         }
@@ -851,54 +841,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
     private boolean isHashUsed(String hash){
         byte[] bytesHash = KvDbUtil.get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool.buildHashKey(hash));
         return bytesHash != null;
-    }
-    //endregion
-
-    //region 新产生的地址相关
-    /**
-     * 校验区块新产生的地址
-     */
-    private boolean checkBlockNewAddress(Block block) {
-        //校验地址作为主键的正确性
-        //新产生的地址不能有重复
-        if(BlockTool.isExistDuplicateNewAddress(block)){
-            LogUtil.debug("区块数据异常，区块中新产生的地址有重复。");
-            return false;
-        }
-        List<Transaction> transactions = block.getTransactions();
-        if(transactions != null){
-            for(Transaction transaction:transactions){
-                if(!checkTransactionNewAddress(transaction)){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    /**
-     * 区块中校验新产生的哈希
-     */
-    private boolean checkTransactionNewAddress(Transaction transaction) {
-        //区块新产生的地址不能有重复
-        if(TransactionTool.isExistDuplicateNewAddress(transaction)){
-            return false;
-        }
-        //区块新产生的地址不能被使用过了
-        List<TransactionOutput> outputs = transaction.getOutputs();
-        if(outputs != null){
-            for (TransactionOutput output:outputs){
-                String address = output.getAddress();
-                if(isAddressUsed(address)){
-                    LogUtil.debug("区块数据异常，地址["+address+"]重复。");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    private boolean isAddressUsed(String address) {
-        byte[] bytesAddress = KvDbUtil.get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool.buildAddressKey(address));
-        return bytesAddress != null;
     }
     //endregion
 

@@ -182,20 +182,6 @@ public class TransactionTool {
         }
         return StringsUtil.hasDuplicateElement(utxoIds);
     }
-    /**
-     * 区块新产生的地址是否存在重复
-     */
-    public static boolean isExistDuplicateNewAddress(Transaction transaction) {
-        List<String> newAddresss = new ArrayList<>();
-        List<TransactionOutput> outputs = transaction.getOutputs();
-        if(outputs != null){
-            for (TransactionOutput output:outputs){
-                String address = output.getAddress();
-                newAddresss.add(address);
-            }
-        }
-        return StringsUtil.hasDuplicateElement(newAddresss);
-    }
 
     public static long getTransactionInputCount(Transaction transaction) {
         List<TransactionInput> inputs = transaction.getInputs();

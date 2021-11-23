@@ -54,25 +54,6 @@ public class BlockTool {
         return StringsUtil.hasDuplicateElement(newHashs);
     }
     /**
-     * 区块新产生的地址是否存在重复
-     */
-    public static boolean isExistDuplicateNewAddress(Block block) {
-        List<String> newAddresss = new ArrayList<>();
-        List<Transaction> transactions = block.getTransactions();
-        if(transactions != null){
-            for(Transaction transaction : transactions){
-                List<TransactionOutput> outputs = transaction.getOutputs();
-                if(outputs != null){
-                    for (TransactionOutput output:outputs){
-                        String address = output.getAddress();
-                        newAddresss.add(address);
-                    }
-                }
-            }
-        }
-        return StringsUtil.hasDuplicateElement(newAddresss);
-    }
-    /**
      * 区块中是否存在重复的[未花费交易输出]
      */
     public static boolean isExistDuplicateUtxo(Block block) {
