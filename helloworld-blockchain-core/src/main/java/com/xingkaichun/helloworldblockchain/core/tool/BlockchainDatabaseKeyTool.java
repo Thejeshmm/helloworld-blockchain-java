@@ -46,14 +46,6 @@ public class BlockchainDatabaseKeyTool {
     private static final String TRANSACTION_OUTPUT_ID_TO_DESTINATION_TRANSACTION_HEIGHT_PREFIX_FLAG = "N";
 
 
-    //地址标识：存储地址到交易输出高度的映射
-    private static final String ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "P";
-    //地址标识：存储地址到未花费交易输出高度的映射
-    private static final String ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "Q";
-    //地址标识：存储地址到已花费交易输出高度的映射
-    private static final String ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "R";
-
-
     //截止标识
     private static final String END_FLAG = "#" ;
     //竖线分隔符
@@ -105,18 +97,6 @@ public class BlockchainDatabaseKeyTool {
     public static byte[] buildTransactionOutputIdToDestinationTransactionHeightKey(String transactionHash,long transactionOutputIndex) {
         String transactionOutputId = buildTransactionOutputId(transactionHash, transactionOutputIndex);
         String stringKey = TRANSACTION_OUTPUT_ID_TO_DESTINATION_TRANSACTION_HEIGHT_PREFIX_FLAG + transactionOutputId + END_FLAG;
-        return ByteUtil.stringToUtf8Bytes(stringKey);
-    }
-    public static byte[] buildAddressToTransactionOutputHeightKey(String address) {
-        String stringKey = ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + END_FLAG;
-        return ByteUtil.stringToUtf8Bytes(stringKey);
-    }
-    public static byte[] buildAddressToUnspentTransactionOutputHeightKey(String address) {
-        String stringKey = ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + END_FLAG;
-        return ByteUtil.stringToUtf8Bytes(stringKey);
-    }
-    public static byte[] buildAddressToSpentTransactionOutputHeightKey(String address) {
-        String stringKey = ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + END_FLAG;
         return ByteUtil.stringToUtf8Bytes(stringKey);
     }
     public static byte[] buildBlockchainTransactionHeightKey() {

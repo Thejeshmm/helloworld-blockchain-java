@@ -55,21 +55,6 @@ public class BlockchainCoreImpl extends BlockchainCore {
     }
 
     @Override
-    public TransactionOutput queryTransactionOutputByAddress(String address) {
-        return blockchainDatabase.queryTransactionOutputByAddress(address);
-    }
-
-    @Override
-    public TransactionOutput queryUnspentTransactionOutputByAddress(String address) {
-        return blockchainDatabase.queryUnspentTransactionOutputByAddress(address);
-    }
-
-    @Override
-    public TransactionOutput querySpentTransactionOutputByAddress(String address) {
-        return blockchainDatabase.querySpentTransactionOutputByAddress(address);
-    }
-
-    @Override
     public Block queryBlockByBlockHeight(long blockHeight) {
         return blockchainDatabase.queryBlockByBlockHeight(blockHeight);
     }

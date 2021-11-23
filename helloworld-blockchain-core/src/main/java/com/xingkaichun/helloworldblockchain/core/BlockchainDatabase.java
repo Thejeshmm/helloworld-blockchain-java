@@ -143,20 +143,6 @@ public abstract class BlockchainDatabase {
 
 
 
-    //region 地址查询
-    /**
-     * 根据 地址 查询 交易输出
-     */
-    public abstract TransactionOutput queryTransactionOutputByAddress(String address) ;
-    /**
-     * 根据 地址 查询 未花费交易输出
-     */
-    public abstract TransactionOutput queryUnspentTransactionOutputByAddress(String address) ;
-    /**
-     * 根据 地址 查询 已花费交易输出
-     */
-    public abstract TransactionOutput querySpentTransactionOutputByAddress(String address) ;
-    //endregion
 
     //region
     /**

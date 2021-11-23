@@ -45,7 +45,7 @@ public class WalletImpl extends Wallet {
 
     @Override
     public List<Account> getNonZeroBalanceAccounts() {
-        List<Account> accounts = new ArrayList<>();
+/*TODO        List<Account> accounts = new ArrayList<>();
         //获取所有
         List<byte[]> bytesAccounts = KvDbUtil.gets(getWalletDatabasePath(),1,100000000);
         if(bytesAccounts != null){
@@ -57,7 +57,8 @@ public class WalletImpl extends Wallet {
                 }
             }
         }
-        return accounts;
+        return accounts;*/
+        return null;
     }
 
     @Override
@@ -84,11 +85,12 @@ public class WalletImpl extends Wallet {
 
     @Override
     public long getBalanceByAddress(String address) {
-        TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(address);
+/*TODO        TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(address);
         if(utxo != null){
             return utxo.getValue();
         }
-        return 0L;
+        return 0L;*/
+        return 0;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class WalletImpl extends Wallet {
         //遍历钱包里的账户,用钱包里的账户付款
         List<Account> allAccounts = getNonZeroBalanceAccounts();
         if(allAccounts != null){
-            for(Account account:allAccounts){
+/*TODO            for(Account account:allAccounts){
                 TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
                 //构建一个新的付款方
                 Payer payer = new Payer();
@@ -158,7 +160,7 @@ public class WalletImpl extends Wallet {
                     response.setPayees(payees);
                     return response;
                 }
-            }
+            }*/
         }
         AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
         response.setMessage(PayAlert.NOT_ENOUGH_MONEY_TO_PAY);

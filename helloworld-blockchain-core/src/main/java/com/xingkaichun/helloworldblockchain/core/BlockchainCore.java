@@ -109,22 +109,6 @@ public abstract class BlockchainCore {
 
 
     /**
-     * 根据地址获取[交易输出]。
-     */
-    public abstract TransactionOutput queryTransactionOutputByAddress(String address) ;
-    /**
-     * 根据地址获取[未花费交易输出]。
-     */
-    public abstract TransactionOutput queryUnspentTransactionOutputByAddress(String address) ;
-    /**
-     * 根据地址获取[已花费交易输出]。
-     */
-    public abstract TransactionOutput querySpentTransactionOutputByAddress(String address) ;
-
-
-
-
-    /**
      * 构建交易。
      */
     public abstract AutoBuildTransactionResponse autoBuildTransaction(AutoBuildTransactionRequest request) ;

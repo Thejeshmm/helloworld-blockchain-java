@@ -84,12 +84,13 @@ public class BlockchainBrowserApplicationServiceImpl implements BlockchainBrowse
 
     @Override
     public TransactionOutputVo3 queryTransactionOutputByAddress(String address) {
-        TransactionOutput transactionOutput = blockchainNetCore.getBlockchainCore().queryTransactionOutputByAddress(address);
+/*TODO        TransactionOutput transactionOutput = blockchainNetCore.getBlockchainCore().queryTransactionOutputByAddress(address);
         if(transactionOutput == null){
             return null;
         }
         TransactionOutputVo3 transactionOutputVo3 = queryTransactionOutputByTransactionOutputId(transactionOutput.getTransactionHash(),transactionOutput.getTransactionOutputIndex());
-        return transactionOutputVo3;
+        return transactionOutputVo3;*/
+        return null;
     }
 
     @Override
