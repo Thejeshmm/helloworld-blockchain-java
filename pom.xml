@@ -17,6 +17,7 @@
     <module>helloworld-blockchain-util</module>
     <module>helloworld-blockchain-netcore-client</module>
     <module>helloworld-blockchain-application</module>
+      <module>helloworld-blockchain-language</module>
   </modules>
 
   <name>helloworld-blockchain-parent</name>
