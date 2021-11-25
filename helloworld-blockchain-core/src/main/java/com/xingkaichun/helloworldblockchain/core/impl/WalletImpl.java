@@ -45,20 +45,24 @@ public class WalletImpl extends Wallet {
 
     @Override
     public List<Account> getNonZeroBalanceAccounts() {
-/*TODO        List<Account> accounts = new ArrayList<>();
+        List<Account> accounts = new ArrayList<>();
         //获取所有
         List<byte[]> bytesAccounts = KvDbUtil.gets(getWalletDatabasePath(),1,100000000);
         if(bytesAccounts != null){
             for(byte[] bytesAccount:bytesAccounts){
                 Account account = EncodeDecodeTool.decode(bytesAccount,Account.class);
-                TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
-                if(utxo != null && utxo.getValue() > 0){
-                    accounts.add(account);
+                List<TransactionOutput> utxos = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
+                if(utxos != null && utxos.size() > 0){
+                    for(TransactionOutput utxo:utxos){
+                        if(utxo.getValue()>0){
+                            accounts.add(account);
+                            break;
+                        }
+                    }
                 }
             }
         }
-        return accounts;*/
-        return null;
+        return accounts;
     }
 
     @Override
@@ -85,12 +89,16 @@ public class WalletImpl extends Wallet {
 
     @Override
     public long getBalanceByAddress(String address) {
-/*TODO        TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(address);
-        if(utxo != null){
-            return utxo.getValue();
+        long values = 0L;
+        List<TransactionOutput> utxos = blockchainDatabase.queryUnspentTransactionOutputByAddress(address);
+        if(utxos != null && utxos.size() > 0){
+            for(TransactionOutput utxo:utxos){
+                if(utxo.getValue()>0){
+                    values += utxo.getValue();
+                }
+            }
         }
-        return 0L;*/
-        return 0;
+        return values;
     }
 
     @Override
@@ -123,44 +131,51 @@ public class WalletImpl extends Wallet {
         //遍历钱包里的账户,用钱包里的账户付款
         List<Account> allAccounts = getNonZeroBalanceAccounts();
         if(allAccounts != null){
-/*TODO            for(Account account:allAccounts){
-                TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
-                //构建一个新的付款方
-                Payer payer = new Payer();
-                payer.setPrivateKey(account.getPrivateKey());
-                payer.setAddress(account.getAddress());
-                payer.setTransactionHash(utxo.getTransactionHash());
-                payer.setTransactionOutputIndex(utxo.getTransactionOutputIndex());
-                payer.setValue(utxo.getValue());
-                payers.add(payer);
-                //设置默认手续费
-                long fee = 0L;
-                boolean haveEnoughMoneyToPay = haveEnoughMoneyToPay(payers,nonChangePayees,fee);
-                if(haveEnoughMoneyToPay){
-                    //创建一个找零账户，并将找零账户保存在钱包里。
-                    Account changeAccount = createAndSaveAccount();
-                    //创建一个找零收款方
-                    Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.getAddress(),fee);
-                    //创建收款方(收款方=[非找零]收款方+[找零]收款方)
-                    List<Payee> payees = new ArrayList<>();
-                    payees.addAll(nonChangePayees);
-                    if(changePayee != null){
-                        payees.add(changePayee);
+            for(Account account:allAccounts){
+                List<TransactionOutput> utxos = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
+                if(utxos != null && !utxos.isEmpty()){
+                    for(TransactionOutput utxo:utxos){
+                        if(utxo.getValue() <= 0){
+                            continue;
+                        }
+                        //构建一个新的付款方
+                        Payer payer = new Payer();
+                        payer.setPrivateKey(account.getPrivateKey());
+                        payer.setAddress(account.getAddress());
+                        payer.setTransactionHash(utxo.getTransactionHash());
+                        payer.setTransactionOutputIndex(utxo.getTransactionOutputIndex());
+                        payer.setValue(utxo.getValue());
+                        payers.add(payer);
+                        //设置默认手续费
+                        long fee = 0L;
+                        boolean haveEnoughMoneyToPay = haveEnoughMoneyToPay(payers,nonChangePayees,fee);
+                        if(haveEnoughMoneyToPay){
+                            //创建一个找零账户，并将找零账户保存在钱包里。
+                            Account changeAccount = createAndSaveAccount();
+                            //创建一个找零收款方
+                            Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.getAddress(),fee);
+                            //创建收款方(收款方=[非找零]收款方+[找零]收款方)
+                            List<Payee> payees = new ArrayList<>();
+                            payees.addAll(nonChangePayees);
+                            if(changePayee != null){
+                                payees.add(changePayee);
+                            }
+                            //构造交易
+                            TransactionDto transactionDto = buildTransaction(payers,payees);
+                            AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
+                            response.setBuildTransactionSuccess(true);
+                            response.setTransaction(transactionDto);
+                            response.setTransactionHash(TransactionDtoTool.calculateTransactionHash(transactionDto));
+                            response.setFee(fee);
+                            response.setPayers(payers);
+                            response.setNonChangePayees(nonChangePayees);
+                            response.setChangePayee(changePayee);
+                            response.setPayees(payees);
+                            return response;
+                        }
                     }
-                    //构造交易
-                    TransactionDto transactionDto = buildTransaction(payers,payees);
-                    AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
-                    response.setBuildTransactionSuccess(true);
-                    response.setTransaction(transactionDto);
-                    response.setTransactionHash(TransactionDtoTool.calculateTransactionHash(transactionDto));
-                    response.setFee(fee);
-                    response.setPayers(payers);
-                    response.setNonChangePayees(nonChangePayees);
-                    response.setChangePayee(changePayee);
-                    response.setPayees(payees);
-                    return response;
                 }
-            }*/
+            }
         }
         AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
         response.setMessage(PayAlert.NOT_ENOUGH_MONEY_TO_PAY);

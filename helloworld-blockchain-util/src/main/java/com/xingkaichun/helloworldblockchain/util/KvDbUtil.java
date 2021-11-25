@@ -73,6 +73,31 @@ public class KvDbUtil {
             return values;
         }
     }
+    public static List<byte[]> getsKey(String dbPath, byte[] bytesKey, long from, long size) {
+        synchronized (KvDbUtil.class){
+            List<byte[]> values = new ArrayList<>();
+            int cunrrentFrom = 0;
+            int cunrrentSize = 0;
+            DB db = getDb(dbPath);
+            DBIterator iterator = db.iterator();
+            for (iterator.seek(bytesKey); iterator.hasNext(); iterator.next()) {
+                byte[] byteValue = iterator.peekNext().getValue();
+                if(byteValue == null || byteValue.length==0){
+                    //注意，用levelDB这里确是continue
+                    continue;
+                }
+                cunrrentFrom++;
+                if(cunrrentFrom>=from && cunrrentSize<size){
+                    values.add(byteValue);
+                    cunrrentSize++;
+                }
+                if(cunrrentSize>=size){
+                    break;
+                }
+            }
+            return values;
+        }
+    }
     public static void write(String dbPath, KvWriteBatch kvWriteBatch) {
         DB db = getDb(dbPath);
         WriteBatch levelDbWriteBatch = toLevelDbWriteBatch(kvWriteBatch);

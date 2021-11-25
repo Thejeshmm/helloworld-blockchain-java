@@ -130,15 +130,24 @@ public class BlockchainDatabaseKeyTool {
     }
 
     public static byte[] buildAddressToTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
-        String stringKey = ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        String stringKey = ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG;
+        if(transactionHash != null){
+            stringKey = stringKey + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        }
         return ByteUtil.stringToUtf8Bytes(stringKey);
     }
     public static byte[] buildAddressToUnspentTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
-        String stringKey = ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        String stringKey = ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG;
+        if(transactionHash != null){
+            stringKey = stringKey + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        }
         return ByteUtil.stringToUtf8Bytes(stringKey);
     }
     public static byte[] buildAddressToSpentTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
-        String stringKey = ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        String stringKey = ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG;
+        if(transactionHash != null){
+            stringKey = stringKey + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        }
         return ByteUtil.stringToUtf8Bytes(stringKey);
     }
 }

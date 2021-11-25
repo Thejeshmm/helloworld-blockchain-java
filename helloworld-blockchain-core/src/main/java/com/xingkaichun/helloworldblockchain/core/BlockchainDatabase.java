@@ -6,6 +6,8 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionOu
 import com.xingkaichun.helloworldblockchain.netcore.dto.BlockDto;
 import com.xingkaichun.helloworldblockchain.netcore.dto.TransactionDto;
 
+import java.util.List;
+
 
 /**
  * 区块链数据库：该类用于区块链数据的持久化。
@@ -143,6 +145,20 @@ public abstract class BlockchainDatabase {
 
 
 
+    //region 地址查询
+    /**
+     * 根据 地址 查询 交易输出
+     */
+    public abstract List<TransactionOutput> queryTransactionOutputByAddress(String address) ;
+    /**
+     * 根据 地址 查询 未花费交易输出
+     */
+    public abstract List<TransactionOutput> queryUnspentTransactionOutputByAddress(String address) ;
+    /**
+     * 根据 地址 查询 已花费交易输出
+     */
+    public abstract List<TransactionOutput> querySpentTransactionOutputByAddress(String address) ;
+    //endregion
 
     //region
     /**

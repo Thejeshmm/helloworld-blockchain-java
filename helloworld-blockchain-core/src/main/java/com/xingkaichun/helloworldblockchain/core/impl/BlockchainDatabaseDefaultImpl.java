@@ -355,6 +355,47 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil.bytesToUint64(bytesTransactionOutputHeight));
     }
+    @Override
+    public List<TransactionOutput> queryTransactionOutputByAddress(String address) {
+       List<byte[]> bytesTransactionOutputHeight = KvDbUtil.getsKey(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool.buildAddressToTransactionOutputHeightKey(address,null,0),0,100);
+        if(bytesTransactionOutputHeight == null || bytesTransactionOutputHeight.isEmpty()){
+            return null;
+        }
+        List<TransactionOutput> list = new ArrayList<>();
+        for(int i=0;i<bytesTransactionOutputHeight.size();i++){
+            TransactionOutput transactionOutput = queryTransactionOutputByTransactionOutputHeight(ByteUtil.bytesToUint64(bytesTransactionOutputHeight.get(i)));
+            list.add(transactionOutput);
+        }
+        return list;
+    }
+
+    @Override
+    public List<TransactionOutput> queryUnspentTransactionOutputByAddress(String address) {
+        List<byte[]> bytesTransactionOutputHeight = KvDbUtil.getsKey(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool.buildAddressToUnspentTransactionOutputHeightKey(address,null,0),0,100);
+        if(bytesTransactionOutputHeight == null || bytesTransactionOutputHeight.isEmpty()){
+            return null;
+        }
+        List<TransactionOutput> list = new ArrayList<>();
+        for(int i=0;i<bytesTransactionOutputHeight.size();i++){
+            TransactionOutput transactionOutput = queryTransactionOutputByTransactionOutputHeight(ByteUtil.bytesToUint64(bytesTransactionOutputHeight.get(i)));
+            list.add(transactionOutput);
+        }
+        return list;
+    }
+
+    @Override
+    public List<TransactionOutput> querySpentTransactionOutputByAddress(String address) {
+        List<byte[]> bytesTransactionOutputHeight = KvDbUtil.getsKey(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool.buildAddressToSpentTransactionOutputHeightKey(address,null,0),0,100);
+        if(bytesTransactionOutputHeight == null || bytesTransactionOutputHeight.isEmpty()){
+            return null;
+        }
+        List<TransactionOutput> list = new ArrayList<>();
+        for(int i=0;i<bytesTransactionOutputHeight.size();i++){
+            TransactionOutput transactionOutput = queryTransactionOutputByTransactionOutputHeight(ByteUtil.bytesToUint64(bytesTransactionOutputHeight.get(i)));
+            list.add(transactionOutput);
+        }
+        return list;
+    }
     //endregion
 
 
