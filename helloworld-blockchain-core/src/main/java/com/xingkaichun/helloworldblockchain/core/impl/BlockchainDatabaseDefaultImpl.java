@@ -384,6 +384,10 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         storeTransactionOutputIdToSpentTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
         storeTransactionOutputIdToSourceTransactionHeight(kvWriteBatch,block, blockchainAction);
         storeTransactionOutputIdToDestinationTransactionHeight(kvWriteBatch,block, blockchainAction);
+
+        storeAddressToTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
+        storeAddressToUnspentTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
+        storeAddressToSpentTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
         return kvWriteBatch;
     }
 
@@ -648,6 +652,85 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                     kvWriteBatch.put(transactionHashKey, transactionHashKey);
                 } else {
                     kvWriteBatch.delete(transactionHashKey);
+                }
+            }
+        }
+    }
+    /**
+     * 存储地址到交易输出
+     */
+    private void storeAddressToTransactionOutputHeight(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
+        List<Transaction> transactions = block.getTransactions();
+        if(transactions == null){
+            return;
+        }
+        for(Transaction transaction : transactions){
+            List<TransactionOutput> outputs = transaction.getOutputs();
+            if(outputs != null){
+                for (TransactionOutput transactionOutput:outputs){
+                    byte[] addressToTransactionOutputHeightKey = BlockchainDatabaseKeyTool.buildAddressToTransactionOutputHeightKey(transactionOutput.getAddress(),transactionOutput.getTransactionHash(),transactionOutput.getTransactionOutputIndex());
+                    if(blockchainAction == BlockchainAction.ADD_BLOCK){
+                        kvWriteBatch.put(addressToTransactionOutputHeightKey, ByteUtil.uint64ToBytes(transactionOutput.getTransactionOutputHeight()));
+                    }else{
+                        kvWriteBatch.delete(addressToTransactionOutputHeightKey);
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * 存储地址到未花费交易输出列表
+     */
+    private void storeAddressToUnspentTransactionOutputHeight(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
+        List<Transaction> transactions = block.getTransactions();
+        if(transactions == null){
+            return;
+        }
+        for(Transaction transaction : transactions){
+            List<TransactionInput> inputs = transaction.getInputs();
+            if(inputs != null){
+                for (TransactionInput transactionInput:inputs){
+                    TransactionOutput utxo = transactionInput.getUnspentTransactionOutput();
+                    byte[] addressToUnspentTransactionOutputHeightKey = BlockchainDatabaseKeyTool.buildAddressToUnspentTransactionOutputHeightKey(utxo.getAddress(),utxo.getTransactionHash(),utxo.getTransactionOutputIndex());
+                    if(blockchainAction == BlockchainAction.ADD_BLOCK){
+                        kvWriteBatch.delete(addressToUnspentTransactionOutputHeightKey);
+                    }else{
+                        kvWriteBatch.put(addressToUnspentTransactionOutputHeightKey, ByteUtil.uint64ToBytes(utxo.getTransactionOutputHeight()));
+                    }
+                }
+            }
+            List<TransactionOutput> outputs = transaction.getOutputs();
+            if(outputs != null){
+                for (TransactionOutput transactionOutput:outputs){
+                    byte[] addressToUnspentTransactionOutputHeightKey = BlockchainDatabaseKeyTool.buildAddressToUnspentTransactionOutputHeightKey(transactionOutput.getAddress(),transactionOutput.getTransactionHash(),transactionOutput.getTransactionOutputIndex());
+                    if(blockchainAction == BlockchainAction.ADD_BLOCK){
+                        kvWriteBatch.put(addressToUnspentTransactionOutputHeightKey, ByteUtil.uint64ToBytes(transactionOutput.getTransactionOutputHeight()));
+                    }else{
+                        kvWriteBatch.delete(addressToUnspentTransactionOutputHeightKey);
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * 存储地址到交易输出高度
+     */
+    private void storeAddressToSpentTransactionOutputHeight(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
+        List<Transaction> transactions = block.getTransactions();
+        if(transactions == null){
+            return;
+        }
+        for(Transaction transaction : transactions){
+            List<TransactionInput> inputs = transaction.getInputs();
+            if(inputs != null){
+                for (TransactionInput transactionInput:inputs){
+                    TransactionOutput utxo = transactionInput.getUnspentTransactionOutput();
+                    byte[] addressToSpentTransactionOutputHeightKey = BlockchainDatabaseKeyTool.buildAddressToSpentTransactionOutputHeightKey(utxo.getAddress(),utxo.getTransactionHash(),utxo.getTransactionOutputIndex());
+                    if(blockchainAction == BlockchainAction.ADD_BLOCK){
+                        kvWriteBatch.put(addressToSpentTransactionOutputHeightKey, ByteUtil.uint64ToBytes(utxo.getTransactionOutputHeight()));
+                    }else{
+                        kvWriteBatch.delete(addressToSpentTransactionOutputHeightKey);
+                    }
                 }
             }
         }

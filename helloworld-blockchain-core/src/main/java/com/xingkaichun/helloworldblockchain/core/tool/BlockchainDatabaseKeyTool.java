@@ -45,6 +45,12 @@ public class BlockchainDatabaseKeyTool {
     //交易输出标识：存储交易输出ID到花费去向交易高度的映射
     private static final String TRANSACTION_OUTPUT_ID_TO_DESTINATION_TRANSACTION_HEIGHT_PREFIX_FLAG = "N";
 
+    //地址标识：存储地址到交易输出高度的映射
+    private static final String ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "P";
+    //地址标识：存储地址到未花费交易输出高度的映射
+    private static final String ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "Q";
+    //地址标识：存储地址到已花费交易输出高度的映射
+    private static final String ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "R";
 
     //截止标识
     private static final String END_FLAG = "#" ;
@@ -121,5 +127,18 @@ public class BlockchainDatabaseKeyTool {
     public static String buildTransactionOutputId(String transactionHash,long transactionOutputIndex) {
         String transactionOutputId = StringUtil.concatenate3(transactionHash, VERTICAL_LINE_FLAG, StringUtil.valueOfUint64(transactionOutputIndex));
         return transactionOutputId;
+    }
+
+    public static byte[] buildAddressToTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
+        String stringKey = ADDRESS_TO_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        return ByteUtil.stringToUtf8Bytes(stringKey);
+    }
+    public static byte[] buildAddressToUnspentTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
+        String stringKey = ADDRESS_TO_UNSPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        return ByteUtil.stringToUtf8Bytes(stringKey);
+    }
+    public static byte[] buildAddressToSpentTransactionOutputHeightKey(String address,String transactionHash,long transactionOutputIndex) {
+        String stringKey = ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG + address + VERTICAL_LINE_FLAG + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
+        return ByteUtil.stringToUtf8Bytes(stringKey);
     }
 }
