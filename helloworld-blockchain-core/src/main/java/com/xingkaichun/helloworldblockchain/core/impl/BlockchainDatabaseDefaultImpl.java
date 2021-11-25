@@ -1015,6 +1015,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         transactionOutput.setAddress(address);
         transactionOutput.setValue(transactionOutputDto.getValue());
         transactionOutput.setOutputScript(outputScriptDto2OutputScript(transactionOutputDto.getOutputScript()));
+        transactionOutput.setContract(transactionOutputDto.getContract());
         return transactionOutput;
     }
     private TransactionType obtainTransactionDto(TransactionDto transactionDto) {

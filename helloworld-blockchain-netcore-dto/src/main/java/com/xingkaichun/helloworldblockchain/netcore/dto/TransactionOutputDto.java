@@ -18,7 +18,8 @@ public class TransactionOutputDto implements Serializable {
     //交易输出的金额
     private long value;
 
-
+    //部署的合约
+    private String contract;
 
 
 
@@ -39,5 +40,14 @@ public class TransactionOutputDto implements Serializable {
     public void setOutputScript(OutputScriptDto outputScript) {
         this.outputScript = outputScript;
     }
-//endregion
+
+    public String getContract() {
+        return contract;
+    }
+
+    public void setContract(String contract) {
+        this.contract = contract;
+    }
+
+    //endregion
 }
