@@ -188,16 +188,8 @@ public class VirtualMachine {
             Register r1 = (Register) instruction.getOperand(1);
             Offset offset = (Offset) instruction.getOperand(2);
             String stringValue = getMemoryStringValue(getRegisterValue(r1)+offset.getOffset());
-
-            int stringAddress = newObject(1);
+            int stringAddress = newString(stringValue);
             setRegisterValue(targetStringAddressRegister, stringAddress);
-
-            int charsAddress = newArray(stringValue.length());
-            storeObjectField(stringAddress,0,charsAddress);
-
-            for(int i=0;i<stringValue.length();i++){
-                storeArrayIndex(charsAddress,i,String.valueOf(stringValue.charAt(i)));
-            }
         }else if(code == OpCode.NEW_OBJECT){
             Register targetObjectAddressRegister = (Register) instruction.getOperand(0);
             ImmediateNumber objectFieldCount = (ImmediateNumber) instruction.getOperand(1);
@@ -329,7 +321,47 @@ public class VirtualMachine {
         }
     }
 
+    public int newStrings(String[] values) {
+        if(values == null || values.length == 0){
+            return 0;
+        }
+        int stringArrayAddress = newArray(values.length);
+        for(int i=0;i<values.length;i++){
+            storeArrayIndex(stringArrayAddress,i,String.valueOf(newString(values[i])));
+        }
+        return stringArrayAddress;
+    }
 
+    public int newString(String value) {
+        int stringAddress = newObject(1);
+
+        int charArrayAddress = newArray(value.length());
+        storeObjectField(stringAddress,0,charArrayAddress);
+
+        for(int i=0;i<value.length();i++){
+            storeArrayIndex(charArrayAddress,i,String.valueOf(value.charAt(i)));
+        }
+        return stringAddress;
+    }
+    public String getVmResult(int stringAddress) {
+        int arrayBaseAddress =  heapMemory.getHeapMemoryValue(stringAddress+2);
+        int arrayLength = heapMemory.getHeapMemoryValue(arrayBaseAddress);
+        String result = "";
+        for(int i=0;i<arrayLength;i++){
+            result = result + heapMemory.getHeapMemoryStringValue(arrayBaseAddress+1+i);
+        }
+        return result;
+    }
+    public String getVmResult() {
+        int stringAddress = Integer.valueOf(getMemory()[getMemory().length-1]);
+        int arrayBaseAddress =  heapMemory.getHeapMemoryValue(stringAddress+2);
+        int arrayLength = heapMemory.getHeapMemoryValue(arrayBaseAddress);
+        String result = "";
+        for(int i=0;i<arrayLength;i++){
+            result = result + heapMemory.getHeapMemoryStringValue(arrayBaseAddress+1+i);
+        }
+        return result;
+    }
 
 
     public boolean isDebug() {
@@ -348,7 +380,7 @@ public class VirtualMachine {
     private void setRegisterValue(Register register,String value){
         registers[register.getAddress()] = value;
     }
-    private void setRegisterValue(Register register,int value){
+    public void setRegisterValue(Register register,int value){
         registers[register.getAddress()] = String.valueOf(value);
     }
     private int getRegisterValue(Register register){
@@ -365,5 +397,9 @@ public class VirtualMachine {
     }
     private String getMemoryStringValue(int address){
         return memory[address];
+    }
+
+    public String[] getMemory() {
+        return memory;
     }
 }

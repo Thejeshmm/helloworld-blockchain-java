@@ -85,6 +85,7 @@ public class Model2DtoTool {
         transactionOutputDto.setValue(transactionOutput.getValue());
         transactionOutputDto.setOutputScript(outputScript2OutputScriptDto(transactionOutput.getOutputScript()));
         transactionOutputDto.setContract(transactionOutput.getContract());
+        transactionOutputDto.setExecuteContract(transactionOutput.getExecuteContract());
         return transactionOutputDto;
     }
 }

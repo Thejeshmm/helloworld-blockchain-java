@@ -21,6 +21,8 @@ public class TransactionOutputDto implements Serializable {
     //部署的合约
     private String contract;
 
+    //执行合约
+    private String executeContract;
 
 
     //region get set
@@ -49,5 +51,12 @@ public class TransactionOutputDto implements Serializable {
         this.contract = contract;
     }
 
-    //endregion
+    public String getExecuteContract() {
+        return executeContract;
+    }
+
+    public void setExecuteContract(String executeContract) {
+        this.executeContract = executeContract;
+    }
+//endregion
 }

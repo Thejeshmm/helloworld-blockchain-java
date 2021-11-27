@@ -10,11 +10,13 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionOu
 import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionType;
 import com.xingkaichun.helloworldblockchain.core.tool.*;
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
+import com.xingkaichun.helloworldblockchain.language.HVM;
 import com.xingkaichun.helloworldblockchain.netcore.dto.*;
 import com.xingkaichun.helloworldblockchain.setting.GenesisBlockSetting;
 import com.xingkaichun.helloworldblockchain.util.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -57,6 +59,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                 return false;
             }
             deployContract(block);
+            executeContract(block);
             KvDbUtil.KvWriteBatch kvWriteBatch = createBlockWriteBatch(block, BlockchainAction.ADD_BLOCK);
             KvDbUtil.write(getBlockchainDatabasePath(), kvWriteBatch);
             return true;
@@ -77,6 +80,24 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                     String directory = coreConfiguration.getCorePath() + "\\contract\\" + transaction.getTransactionHash();
                     FileUtil.makeDirectory(directory);
                     FileUtil.write(directory+"\\"+"contract.helloworld",ByteUtil.utf8BytesToString(ByteUtil.hexStringToBytes(transactionOutput.getContract())));
+                }
+            }
+        }
+    }
+
+    private void executeContract(Block block) {
+        List<Transaction> transactions = block.getTransactions();
+        for(Transaction transaction : transactions){
+            List<TransactionOutput> outputs = transaction.getOutputs();
+            for(TransactionOutput transactionOutput : outputs){
+                if(!StringUtil.isEmpty(transactionOutput.getExecuteContract())){
+                    String[] inputs = transactionOutput.getExecuteContract().split(",");
+                    String contractPath = coreConfiguration.getCorePath() + "\\contract\\" + inputs[0] + "\\"+"contract.helloworld";
+                    String[] args = null;
+                    if(inputs.length >1){
+                        args = Arrays.copyOfRange(inputs,1,inputs.length);
+                    }
+                    String executeResult = HVM.execute(contractPath,args);
                 }
             }
         }
@@ -1032,6 +1053,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         transactionOutput.setValue(transactionOutputDto.getValue());
         transactionOutput.setOutputScript(outputScriptDto2OutputScript(transactionOutputDto.getOutputScript()));
         transactionOutput.setContract(transactionOutputDto.getContract());
+        transactionOutput.setExecuteContract(transactionOutputDto.getExecuteContract());
         return transactionOutput;
     }
     private TransactionType obtainTransactionDto(TransactionDto transactionDto) {

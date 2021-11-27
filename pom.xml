@@ -81,6 +81,11 @@
         <artifactId>helloworld-blockchain-util</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.xingkaichun.helloworldblockchain</groupId>
+        <artifactId>helloworld-blockchain-language</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>
