@@ -56,16 +56,32 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             if(!checkBlock){
                 return false;
             }
+            deployContract(block);
             KvDbUtil.KvWriteBatch kvWriteBatch = createBlockWriteBatch(block, BlockchainAction.ADD_BLOCK);
             KvDbUtil.write(getBlockchainDatabasePath(), kvWriteBatch);
             return true;
         }catch (Exception e){
-            LogUtil.debug("add block error.");
+            LogUtil.error("add block error.",e);
             return false;
         }finally {
             writeLock.unlock();
         }
     }
+
+    private void deployContract(Block block) {
+        List<Transaction> transactions = block.getTransactions();
+        for(Transaction transaction : transactions){
+            List<TransactionOutput> outputs = transaction.getOutputs();
+            for(TransactionOutput transactionOutput : outputs){
+                if(!StringUtil.isEmpty(transactionOutput.getContract())){
+                    String directory = coreConfiguration.getCorePath() + "\\contract\\" + transaction.getTransactionHash();
+                    FileUtil.makeDirectory(directory);
+                    FileUtil.write(directory+"\\"+"contract.helloworld",ByteUtil.utf8BytesToString(ByteUtil.hexStringToBytes(transactionOutput.getContract())));
+                }
+            }
+        }
+    }
+
     @Override
     public void deleteTailBlock() {
         Lock writeLock = readWriteLock.writeLock();

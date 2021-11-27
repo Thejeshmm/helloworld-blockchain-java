@@ -62,4 +62,19 @@ public class FileUtil {
             }
         }
     }
+
+    public static void write(String path, String contract) {
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(path);
+            fileWriter.append(contract);
+            fileWriter.flush();
+        }catch (Exception e){
+            try {
+                fileWriter.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

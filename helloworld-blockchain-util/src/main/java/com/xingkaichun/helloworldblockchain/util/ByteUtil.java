@@ -145,4 +145,34 @@ public class ByteUtil {
         RANDOM.nextBytes(randomBytes);
         return randomBytes;
     }
+
+    public static void main(String[] args) {
+        String contract = "contract main\n" +
+                "{\n" +
+                "    struct string\n" +
+                "    {\n" +
+                "        char[] chars\n" +
+                "    }\n" +
+                "    function PrintString(string string)\n" +
+                "    {\n" +
+                "        for(int i=0; i<string.chars.length; i=i+1){\n" +
+                "            print(string.chars[i])\n" +
+                "        }\n" +
+                "        print('\\n')\n" +
+                "    }\n" +
+                "    function main(string[] args) string\n" +
+                "    {\n" +
+                "        PrintString(args[0])\n" +
+                "        print('\\n')\n" +
+                "        PrintString(args[1])\n" +
+                "        print('\\n')\n" +
+                "        PrintString(args[2])\n" +
+                "        print('\\n')\n" +
+                "        return \"xyz\"\n" +
+                "    }\n" +
+                "}" ;
+        //System.out.println(bytesToHexString(stringToUtf8Bytes(contract)));
+        String hex = "636f6e7472616374206d61696e0a7b0a2020202073747275637420737472696e670a202020207b0a2020202020202020636861725b5d2063686172730a202020207d0a2020202066756e6374696f6e205072696e74537472696e6728737472696e6720737472696e67290a202020207b0a2020202020202020666f7228696e7420693d303b20693c737472696e672e63686172732e6c656e6774683b20693d692b31297b0a2020202020202020202020207072696e7428737472696e672e63686172735b695d290a20202020202020207d0a20202020202020207072696e7428275c6e27290a202020207d0a2020202066756e6374696f6e206d61696e28737472696e675b5d20617267732920737472696e670a202020207b0a20202020202020205072696e74537472696e6728617267735b305d290a20202020202020207072696e7428275c6e27290a20202020202020205072696e74537472696e6728617267735b315d290a20202020202020207072696e7428275c6e27290a20202020202020205072696e74537472696e6728617267735b325d290a20202020202020207072696e7428275c6e27290a202020202020202072657475726e202278797a220a202020207d0a7d";
+        System.out.println(utf8BytesToString(hexStringToBytes(hex)));
+    }
 }
