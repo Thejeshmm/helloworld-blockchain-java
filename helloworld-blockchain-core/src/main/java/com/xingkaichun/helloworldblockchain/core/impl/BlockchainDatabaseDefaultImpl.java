@@ -11,13 +11,13 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionTy
 import com.xingkaichun.helloworldblockchain.core.tool.*;
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
 import com.xingkaichun.helloworldblockchain.language.HVM;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.BaseData;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.MapData;
 import com.xingkaichun.helloworldblockchain.netcore.dto.*;
 import com.xingkaichun.helloworldblockchain.setting.GenesisBlockSetting;
 import com.xingkaichun.helloworldblockchain.util.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -58,8 +58,6 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             if(!checkBlock){
                 return false;
             }
-            deployContract(block);
-            executeContract(block);
             KvDbUtil.KvWriteBatch kvWriteBatch = createBlockWriteBatch(block, BlockchainAction.ADD_BLOCK);
             KvDbUtil.write(getBlockchainDatabasePath(), kvWriteBatch);
             return true;
@@ -85,21 +83,37 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         }
     }
 
-    private void executeContract(Block block) {
-        List<Transaction> transactions = block.getTransactions();
-        for(Transaction transaction : transactions){
-            List<TransactionOutput> outputs = transaction.getOutputs();
-            for(TransactionOutput transactionOutput : outputs){
-                if(!StringUtil.isEmpty(transactionOutput.getExecuteContract())){
-                    String[] inputs = transactionOutput.getExecuteContract().split(",");
-                    String contractPath = coreConfiguration.getCorePath() + "\\contract\\" + inputs[0] + "\\"+"contract.helloworld";
-                    String[] args = null;
-                    if(inputs.length >1){
-                        args = Arrays.copyOfRange(inputs,1,inputs.length);
+    private void executeContract(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
+        byte[] contractDataKey = BlockchainDatabaseKeyTool.buildContractDataKey(block.getHash());
+        if(BlockchainAction.ADD_BLOCK == blockchainAction){
+            BaseData baseData = new BaseDataDefaultImpl(kvWriteBatch,getBlockchainDatabasePath());
+            List<Transaction> transactions = block.getTransactions();
+            for(Transaction transaction : transactions){
+                List<TransactionOutput> outputs = transaction.getOutputs();
+                for(TransactionOutput transactionOutput : outputs){
+                    if(!StringUtil.isEmpty(transactionOutput.getExecuteContract())){
+                        String[] inputs = transactionOutput.getExecuteContract().split(",");
+                        String contractDir = coreConfiguration.getCorePath() + "\\contract\\" + inputs[0];
+                        String contractPath = contractDir + "\\"+"contract.helloworld";
+                        String[] args = null;
+                        if(inputs.length >1){
+                            args = Arrays.copyOfRange(inputs,1,inputs.length);
+                        }
+                        HVM hvm = new HVM();
+                        baseData.resetKeyPrefix(inputs[0]);
+                        String executeResult = hvm.execute(baseData,contractPath,args);
+                        System.out.println(executeResult);
+                        Map<String,String> data = hvm.virtualMachine.getData();
+                        baseData.addData(data);
                     }
-                    String executeResult = HVM.execute(contractPath,args);
                 }
             }
+            MapData mapData = baseData.getOldData();
+            kvWriteBatch.put(contractDataKey, EncodeDecodeTool.encode(mapData));
+        }else{
+            byte[] bytesValue = KvDbUtil.get(getBlockchainDatabasePath(),contractDataKey);
+            MapData mapData = EncodeDecodeTool.decode(bytesValue,MapData.class);
+            kvWriteBatch.put(contractDataKey, EncodeDecodeTool.encode(mapData));
         }
     }
 
@@ -466,6 +480,9 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         storeAddressToTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
         storeAddressToUnspentTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
         storeAddressToSpentTransactionOutputHeight(kvWriteBatch,block, blockchainAction);
+
+        deployContract(block);
+        executeContract(kvWriteBatch,block,blockchainAction);
         return kvWriteBatch;
     }
 

@@ -52,6 +52,8 @@ public class OpCode {
     public static final OpCode PRINT_CHAR = new OpCode("PRINT_CHAR");
     public static final OpCode PRINT_BOOLEAN = new OpCode("PRINT_BOOLEAN");
     public static final OpCode ASSERT = new OpCode("ASSERT");
+    public static final OpCode PUT_DATA = new OpCode("PUT_DATA");
+    public static final OpCode GET_DATA = new OpCode("GET_DATA");
 
     @Override
     public String toString() {

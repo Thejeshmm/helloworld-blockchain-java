@@ -550,6 +550,23 @@ public class Translator {
             program.addAssert(address);
             return new ArrayList<>();
         }
+        if("put".equals(functionName)){
+            ASTNode parameter1 = parameters.get(0);
+            Symbol parameter1Address = translateExpression(program, parameter1, symbolTable);
+            ASTNode parameter2 = parameters.get(1);
+            Symbol parameter2Address = translateExpression(program, parameter2, symbolTable);
+            program.addPutData(parameter1Address,parameter2Address);
+            return new ArrayList<>();
+        }
+        if("get".equals(functionName)){
+            ASTNode parameter1 = parameters.get(0);
+            Symbol parameter1Address = translateExpression(program, parameter1, symbolTable);
+            Symbol result = symbolTable.createHeapObjectSymbol(null,null,"string",null);
+            program.addGetData(result,parameter1Address);
+            List<Symbol> returnValues = new ArrayList<>();
+            returnValues.add(result);
+            return returnValues;
+        }
 
         List<Symbol> parameterValues = new ArrayList<>();
         for(int i = 0; i < parameters.size(); i++) {

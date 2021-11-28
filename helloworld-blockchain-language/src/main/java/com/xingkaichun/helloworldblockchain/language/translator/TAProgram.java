@@ -56,6 +56,12 @@ public class TAProgram {
     public void addAssignment(Symbol result, String op, Symbol arg1, Symbol arg2) {
         instructions.add(new AssignmentTAInstruction(result, op, arg1, arg2));
     }
+    public void addPutData(Symbol key, Symbol value) {
+        instructions.add(new PutDataTAInstruction(key, value));
+    }
+    public void addGetData(Symbol result, Symbol key) {
+        instructions.add(new GetDataTAInstruction(result, key));
+    }
 
     public void setStaticSymbols(SymbolTable symbolTable) {
         for(Symbol symbol : symbolTable.getSymbols()) {

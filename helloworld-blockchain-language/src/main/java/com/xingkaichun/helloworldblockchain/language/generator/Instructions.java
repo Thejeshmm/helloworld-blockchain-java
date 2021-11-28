@@ -5,6 +5,8 @@ import com.xingkaichun.helloworldblockchain.language.generator.operand.Label;
 import com.xingkaichun.helloworldblockchain.language.generator.operand.Offset;
 import com.xingkaichun.helloworldblockchain.language.generator.operand.Register;
 
+import java.util.List;
+
 /**
  * @author xingkaichun@ceair.com
  */
@@ -148,6 +150,20 @@ public class Instructions {
         Instruction i = new Instruction(code);
         i.operands.add(r);
         i.operands.add(number);
+        return i;
+    }
+
+    public static Instruction putData(Register s0, Register s1) {
+        Instruction i = new Instruction(OpCode.PUT_DATA);
+        i.operands.add(s0);
+        i.operands.add(s1);
+        return i;
+    }
+
+    public static Instruction getData(Register s0, Register s1) {
+        Instruction i = new Instruction(OpCode.GET_DATA);
+        i.operands.add(s0);
+        i.operands.add(s1);
         return i;
     }
 }

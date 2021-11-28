@@ -51,6 +51,10 @@ public class Generator {
                 generatorPrint(program, ta);
             }else if(ta instanceof AssertTAInstruction){
                 generatorAssert(program, ta);
+            }else if(ta instanceof PutDataTAInstruction){
+                generatorPutData(program, ta);
+            }else if(ta instanceof GetDataTAInstruction){
+                generatorGetData(program, ta);
             }else {
                 throw new GeneratorException();
             }
@@ -140,6 +144,21 @@ public class Generator {
         } else {
             throw new GeneratorException();
         }
+    }
+
+    private void generatorGetData(Program program, TAInstruction ta) {
+        GetDataTAInstruction getDataTAInstruction = (GetDataTAInstruction)ta;
+        program.add(Instruction.loadToRegister(Register.S2, getDataTAInstruction.getResult()));
+        program.add(Instruction.loadToRegister(Register.S1, getDataTAInstruction.getKey()));
+        program.add(Instructions.getData(Register.S2, Register.S1));
+        program.add(Instruction.storeToMemory(Register.S2, getDataTAInstruction.getResult()));
+    }
+
+    private void generatorPutData(Program program, TAInstruction ta) {
+        PutDataTAInstruction putDataTAInstruction = (PutDataTAInstruction)ta;
+        program.add(Instruction.loadToRegister(Register.S0, putDataTAInstruction.getKey()));
+        program.add(Instruction.loadToRegister(Register.S1, putDataTAInstruction.getValue()));
+        program.add(Instructions.putData(Register.S0, Register.S1));
     }
 
     private void generatorIf(Program program, TAInstruction taInstruction) {

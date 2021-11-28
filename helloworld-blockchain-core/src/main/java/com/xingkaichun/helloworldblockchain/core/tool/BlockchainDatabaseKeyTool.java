@@ -52,6 +52,9 @@ public class BlockchainDatabaseKeyTool {
     //地址标识：存储地址到已花费交易输出高度的映射
     private static final String ADDRESS_TO_SPENT_TRANSACTION_OUTPUT_HEIGHT_PREFIX_FLAG = "R";
 
+
+    private static final String ContractDataKey = "S";
+
     //截止标识
     private static final String END_FLAG = "#" ;
     //竖线分隔符
@@ -148,6 +151,11 @@ public class BlockchainDatabaseKeyTool {
         if(transactionHash != null){
             stringKey = stringKey + buildTransactionOutputId(transactionHash,transactionOutputIndex) + END_FLAG;
         }
+        return ByteUtil.stringToUtf8Bytes(stringKey);
+    }
+
+    public static byte[] buildContractDataKey(String transactionHash) {
+        String stringKey = ContractDataKey + transactionHash + END_FLAG;
         return ByteUtil.stringToUtf8Bytes(stringKey);
     }
 }
