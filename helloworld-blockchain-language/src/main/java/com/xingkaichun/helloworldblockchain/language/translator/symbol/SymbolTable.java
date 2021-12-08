@@ -125,6 +125,11 @@ public class SymbolTable {
         this.addSymbol(symbol);
         return symbol;
     }
+    public Symbol createStaticThisSymbol(Token lexeme) {
+        Symbol symbol = StaticThisSymbol.createStaticThisSymbol(lexeme);
+        this.addSymbol(symbol);
+        return symbol;
+    }
     public Symbol createAddressSymbol(Token lexeme, String name, String structTypeName, String variableName) {
         name = defaultNameHandler(name);
         Symbol symbol = AddressSymbol.createAddressSymbol(lexeme, name, structTypeName, variableName, this.offsetIndex++);

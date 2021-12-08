@@ -47,10 +47,10 @@ public class Translator {
     public void translateStructStmt(TAProgram program, ASTNode node, SymbolTable symbolTable) throws TranslatorException {
     }
 
-    public void translateStmt(TAProgram program, ASTNode node, SymbolTable symbolTable) throws TranslatorException {
+    public void translateStmt(TAProgram program, ASTNode node, SymbolTable symbolTable, String forEndLabelName, String forUpdateStartLabelName) throws TranslatorException {
         switch (node.getType()) {
             case IF_STATEMENT:
-                translateIfStatement(program, node, symbolTable);
+                translateIfStatement(program, node, symbolTable, forEndLabelName, forUpdateStartLabelName);
                 return;
             case ASSIGN_STATEMENT:
                 translateAssignStatement(program, node, symbolTable);
@@ -70,25 +70,25 @@ public class Translator {
             case FOR_STATEMENT:
                 translateForStatement(program, node, symbolTable);
                 return;
+            case BREAK_STATEMENT:
+                program.addGoto(forEndLabelName);
+                return;
+            case CONTINUE_STATEMENT:
+                program.addGoto(forUpdateStartLabelName);
+                return;
         }
         throw new TranslatorException("Translator not implement " + node.getType());
     }
 
     public void translateFunctionBlock(TAProgram program, ASTNode block, SymbolTable parent) throws TranslatorException {
         for(ASTNode child : block.getChildren()) {
-            translateStmt(program, child, parent);
+            translateStmt(program, child, parent, null, null);
         }
     }
 
     public void translateForBlock(TAProgram program, ASTNode block, SymbolTable symbolTable, String forEndLabelName, String forUpdateStartLabelName) throws TranslatorException {
         for(ASTNode child : block.getChildren()) {
-            if(child instanceof BreakStatement){
-                program.addGoto(forEndLabelName);
-            }else if(child instanceof ContinueStatement){
-                program.addGoto(forUpdateStartLabelName);
-            }else {
-                translateStmt(program, child, symbolTable);
-            }
+            translateStmt(program, child, symbolTable, forEndLabelName, forUpdateStartLabelName);
         }
     }
 
@@ -227,7 +227,11 @@ public class Translator {
         }
     }
 
-    public void translateIfStatement(TAProgram program, ASTNode node, SymbolTable symbolTable) throws TranslatorException {
+    public void translateIfStatement(TAProgram program, ASTNode node, SymbolTable parent, String forEndLabelName, String forUpdateStartLabelName) throws TranslatorException {
+        SymbolTable symbolTable = new SymbolTable();
+        parent.addChildSymbolTable(symbolTable);
+        symbolTable.setOffsetIndex(parent.getOffsetIndex());
+
         IfStatement ifStatement = (IfStatement)node;
         ASTNode expr = ifStatement.getCondition();
         Symbol conditionSymbol = translateExpression(program,expr,symbolTable);
@@ -243,9 +247,9 @@ public class Translator {
         }
 
         if(ifStatement.getElseBody() != null) {
-            translateIfTailBlock(program, ifStatement.getElseBody(), symbolTable);
+            translateIfTailBlock(program, ifStatement.getElseBody(), symbolTable, forEndLabelName, forUpdateStartLabelName);
         } else if(ifStatement.getElseIfStatement() != null) {
-            translateIfStatement(program, ifStatement.getElseIfStatement(), symbolTable);
+            translateIfStatement(program, ifStatement.getElseIfStatement(), symbolTable, forEndLabelName, forUpdateStartLabelName);
         }
 
         LabelTAInstruction labelEnd = program.addLabel(LabelSymbol.getNextLabel());
@@ -259,16 +263,18 @@ public class Translator {
     public void translateIfBlock(TAProgram program, ASTNode block, SymbolTable parent) throws TranslatorException {
         SymbolTable symbolTable = new SymbolTable();
         parent.addChildSymbolTable(symbolTable);
+        symbolTable.setOffsetIndex(parent.getOffsetIndex());
         for(ASTNode child : block.getChildren()) {
-            translateStmt(program, child, symbolTable);
+            translateStmt(program, child, symbolTable, null, null);
         }
     }
 
-    public void translateIfTailBlock(TAProgram program, ASTNode block, SymbolTable parent) throws TranslatorException {
+    public void translateIfTailBlock(TAProgram program, ASTNode block, SymbolTable parent, String forEndLabelName, String forUpdateStartLabelName) throws TranslatorException {
         SymbolTable symbolTable = new SymbolTable();
         parent.addChildSymbolTable(symbolTable);
+        symbolTable.setOffsetIndex(parent.getOffsetIndex());
         for(ASTNode child : block.getChildren()) {
-            translateStmt(program, child, symbolTable);
+            translateStmt(program, child, symbolTable, forEndLabelName, forUpdateStartLabelName);
         }
     }
 
@@ -362,7 +368,9 @@ public class Translator {
                 expressionAddresss.add(expressionAddress);
             }
             Symbol returnExpressionAddress;
-            if(TokenType.BOOLEAN.EQ.getName().equals(node.getLexeme().getValue())){
+            if(TokenType.EQ.getName().equals(node.getLexeme().getValue())
+                ||TokenType.AND.getName().equals(node.getLexeme().getValue())
+                ||TokenType.OR.getName().equals(node.getLexeme().getValue())){
                 returnExpressionAddress = symbolTable.createBooleanSymbol(node.getLexeme(),null,null);
             }else {
                 returnExpressionAddress = symbolTable.createAddressSymbol(node.getLexeme(),null,null,null);
@@ -386,9 +394,19 @@ public class Translator {
 
     private Symbol translateComplexFieldExpression(TAProgram program, ASTNode node, SymbolTable symbolTable) {
         ComplexVariableExpression expression = (ComplexVariableExpression)node;
-        Symbol clone = symbolTable.cloneVariableSymbol(expression.getLexeme(),expression.getVariableName()).copy();
-        ComplexSonExpression complexSonExpression = (ComplexSonExpression) expression.getChildren().get(0);
+        Symbol clone = null;
+        ComplexSonExpression complexSonExpression = expression.getComplexSonExpression();
+        if("this".equals(expression.getVariableName())){
+            clone = symbolTable.createStaticThisSymbol(expression.getLexeme());
+        }else {
+            clone = symbolTable.cloneVariableSymbol(expression.getLexeme(),expression.getVariableName()).copy();
+        }
         while (complexSonExpression != null){
+            if(clone instanceof StaticThisSymbol){
+                StaticThisSymbol staticThisSymbol = (StaticThisSymbol)clone;
+                clone = symbolTable.createHeapObjectSymbol(null,null,"This",null);
+                program.addAssignment(clone,"=", staticThisSymbol, null);
+            }
             if(clone instanceof HeapObjectFieldSymbol && complexSonExpression instanceof ComplexFieldExpression){
                 HeapObjectFieldSymbol heapObjectFieldSymbol = (HeapObjectFieldSymbol)clone;
                 ComplexFieldExpression complexFieldExpression = (ComplexFieldExpression) complexSonExpression;

@@ -9,7 +9,7 @@ public class PriorityTable {
     private static final List<List<String>> table = new ArrayList<>();
 
     static {
-        table.add(Arrays.asList("==", "!=", ">", ">=", "<", "<="));
+        table.add(Arrays.asList("==", "!=", ">", ">=", "<", "<=", "||", "&&"));
         table.add(Arrays.asList("+", "-"));
         table.add(Arrays.asList("*", "/", "%"));
     }

@@ -26,12 +26,15 @@ public class OpCode {
     public static final OpCode GE = new OpCode("GE");
     public static final OpCode NOT = new OpCode("NOT");
     public static final OpCode NE = new OpCode("NE");
+    public static final OpCode OR = new OpCode("OR");
+    public static final OpCode AND = new OpCode("AND");
 
     public static final OpCode LOAD = new OpCode("LOAD");
     public static final OpCode LOAD_OBJECT_FIELD = new OpCode("LOAD_OBJECT_FIELD");
     public static final OpCode LOAD_ARRAY_INDEX = new OpCode("LOAD_ARRAY_INDEX");
     public static final OpCode LOAD_ARRAY_LENGTH = new OpCode("LOAD_ARRAY_LENGTH");
     public static final OpCode LOAD_IMMEDIATE_NUMBER = new OpCode("LOAD_IMMEDIATE_NUMBER");
+    public static final OpCode LOAD_THIS = new OpCode("LOAD_THIS");
 
     public static final OpCode STORE = new OpCode( "STORE");
     public static final OpCode STORE_OBJECT_FIELD = new OpCode("STORE_OBJECT_FIELD");
@@ -54,6 +57,7 @@ public class OpCode {
     public static final OpCode ASSERT = new OpCode("ASSERT");
     public static final OpCode PUT_DATA = new OpCode("PUT_DATA");
     public static final OpCode GET_DATA = new OpCode("GET_DATA");
+
 
     @Override
     public String toString() {

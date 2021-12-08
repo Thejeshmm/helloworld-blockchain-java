@@ -66,7 +66,11 @@ public class Instructions {
         i.operands.add(immediateNumber);
         return i;
     }
-
+    public static Instruction loadThisInstruction(Register storeTo) {
+        Instruction i = new Instruction(OpCode.LOAD_THIS);
+        i.operands.add(storeTo);
+        return i;
+    }
 
     public static Instruction storeInstruction(Register storeTo, Register storeFromBase, Offset offset) {
         Instruction i = new Instruction(OpCode.STORE);

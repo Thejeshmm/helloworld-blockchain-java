@@ -24,6 +24,8 @@ public class VirtualMachine {
 
     private static final int OBJECT_HEAD_SIZE = 1;
     private static final int ARRAY_HEAD_SIZE = 1;
+
+    public static int THIS_ADDRESS = 0;
     public VirtualMachine(List<String> staticArea, List<Instruction> opcodes, Integer entry) {
         for(int i=0; i < memory.length; i++) {
             memory[i] = "0";
@@ -146,7 +148,25 @@ public class VirtualMachine {
             Register r0 = (Register) instruction.getOperand(0);
             Register r1 = (Register) instruction.getOperand(1);
             Register r2 = (Register) instruction.getOperand(2);
-            if(getRegisterValue(r1) != getRegisterValue(r2)){
+            if(StringUtil.equals(getRegisterStringValue(r1),getRegisterStringValue(r2))){
+                setRegisterValue(r0,BooleanEnum.FALSE.getValue());
+            }else {
+                setRegisterValue(r0,BooleanEnum.TRUE.getValue());
+            }
+        }else if(code == OpCode.OR){
+            Register r0 = (Register) instruction.getOperand(0);
+            Register r1 = (Register) instruction.getOperand(1);
+            Register r2 = (Register) instruction.getOperand(2);
+            if(getRegisterValue(r1) == BooleanEnum.TRUE.getValue() || getRegisterValue(r2) == BooleanEnum.TRUE.getValue()){
+                setRegisterValue(r0,BooleanEnum.TRUE.getValue());
+            }else {
+                setRegisterValue(r0,BooleanEnum.FALSE.getValue());
+            }
+        }else if(code == OpCode.AND){
+            Register r0 = (Register) instruction.getOperand(0);
+            Register r1 = (Register) instruction.getOperand(1);
+            Register r2 = (Register) instruction.getOperand(2);
+            if(getRegisterValue(r1) == BooleanEnum.TRUE.getValue() && getRegisterValue(r2) == BooleanEnum.TRUE.getValue()){
                 setRegisterValue(r0,BooleanEnum.TRUE.getValue());
             }else {
                 setRegisterValue(r0,BooleanEnum.FALSE.getValue());
@@ -182,6 +202,9 @@ public class VirtualMachine {
             Register r0 = (Register) instruction.getOperand(0);
             ImmediateNumber r1 = (ImmediateNumber) instruction.getOperand(1);
             setRegisterValue(r0, r1.getValue());
+        }else if(code == OpCode.LOAD_THIS){
+            Register r0 = (Register) instruction.getOperand(0);
+            setRegisterValue(r0, THIS_ADDRESS);
         }else if(code == OpCode.NEW_STRING){
             Register targetStringAddressRegister = (Register) instruction.getOperand(0);
             Register r1 = (Register) instruction.getOperand(1);
@@ -346,7 +369,16 @@ public class VirtualMachine {
         }
         return stringArrayAddress;
     }
-
+    public int newThis() {
+        int thisAddress = newObject(1);
+        int transactionAddress = newObject(2);
+        storeObjectField(thisAddress,0,transactionAddress);
+        int intFromAddress = newString("1111222233334444");
+        int intToAddress = newString("6666777788889999");
+        storeObjectField(transactionAddress,0,intFromAddress);
+        storeObjectField(transactionAddress,1,intToAddress);
+        return thisAddress;
+    }
     public int newString(String value) {
         int stringAddress = newObject(1);
 
@@ -359,6 +391,9 @@ public class VirtualMachine {
         return stringAddress;
     }
     public String getString(int stringAddress) {
+        if(stringAddress == 0){
+            return null;
+        }
         int arrayBaseAddress =  heapMemory.getHeapMemoryValue(stringAddress+2);
         int arrayLength = heapMemory.getHeapMemoryValue(arrayBaseAddress);
         String result = "";
@@ -369,13 +404,7 @@ public class VirtualMachine {
     }
     public String getVmResult() {
         int stringAddress = Integer.valueOf(getMemory()[getMemory().length-1]);
-        int arrayBaseAddress =  heapMemory.getHeapMemoryValue(stringAddress+2);
-        int arrayLength = heapMemory.getHeapMemoryValue(arrayBaseAddress);
-        String result = "";
-        for(int i=0;i<arrayLength;i++){
-            result = result + heapMemory.getHeapMemoryStringValue(arrayBaseAddress+1+i);
-        }
-        return result;
+        return getString(stringAddress);
     }
 
 

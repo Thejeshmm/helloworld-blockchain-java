@@ -58,7 +58,7 @@ public class IfStatement extends Statement {
 
     public ASTNode getElseBody(){
         ASTNode block = this.getChild(2);
-        if(block instanceof Block) {
+        if(block instanceof IfTailBlock) {
             return block;
         }
         return null;

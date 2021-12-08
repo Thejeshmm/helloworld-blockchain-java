@@ -99,6 +99,9 @@ public class Instruction {
         }else if(arg instanceof NullSymbol) {
             instructions.add(Instructions.loadImmediateNumberInstruction(target, new ImmediateNumber(0)));
             return instructions;
+        }else if(arg instanceof StaticThisSymbol) {
+            instructions.add(Instructions.loadThisInstruction(target));
+            return instructions;
         }
         throw new GeneratorException();
     }

@@ -75,9 +75,9 @@ public abstract class Statement extends ASTNode{
         }else if(reader.nextIs(TokenType.FOR)) {
             return ForStatement.parse(reader);
         }else if(reader.nextIs(TokenType.BREAK)) {
-            throw new ParseException();
+            return BreakStatement.parse(reader);
         }else if(reader.nextIs(TokenType.CONTINUE)) {
-            throw new ParseException();
+            return ContinueStatement.parse(reader);
         }else if(CallExpression.nextIsCallExpression(reader)) {
             //function_name(..)..
             return CallExpression.parse(reader);
@@ -168,17 +168,27 @@ public abstract class Statement extends ASTNode{
             }
             reader.next();
             nextCount++;
+            int LBRACKET = 0 ;
             while (reader.nextIs("[")){
+                LBRACKET++;
                 reader.next("[");
                 nextCount++;
-                reader.next();
-                nextCount++;
-                if(!reader.nextIs("]")){
-                    isAssignStatement = false;
-                    break;
-                }else {
-                    reader.next();
-                    nextCount++;
+                while (true){
+                    if(reader.nextIs("[")){
+                        LBRACKET++;
+                        reader.next("[");
+                        nextCount++;
+                    }else if(reader.nextIs("]")){
+                        LBRACKET--;
+                        reader.next("]");
+                        nextCount++;
+                    }else {
+                        if(LBRACKET == 0){
+                            break;
+                        }
+                        reader.next();
+                        nextCount++;
+                    }
                 }
             }
             if(isAssignStatement != null){

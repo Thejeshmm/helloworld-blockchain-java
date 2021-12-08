@@ -20,7 +20,6 @@ public class HVM {
         TokenReader reader = Lexer.fromFile(fileName);
 
         ASTNode astNode = Parser.parse(reader);
-        System.out.println(astNode);
         Translator translator = new Translator();
         TAProgram taProgram = translator.translate(astNode);
         Generator generator = new Generator();
@@ -35,6 +34,9 @@ public class HVM {
             int address = virtualMachine.newStrings(args);
             virtualMachine.getMemory()[virtualMachine.getMemory().length-3] = String.valueOf(address);
         }
+        int thisAddress = virtualMachine.newThis();
+        virtualMachine.THIS_ADDRESS = thisAddress;
+
         virtualMachine.setDebug(false);
         virtualMachine.run();
         return virtualMachine.getVmResult();

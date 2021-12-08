@@ -141,6 +141,9 @@ public class Generator {
         } else if(object instanceof BooleanSymbol) {
             BooleanSymbol booleanSymbol = (BooleanSymbol)object;
             program.add(Instructions.assertInstruction(Register.SP,  new Offset(-booleanSymbol.getOffset())));
+        } else if(object instanceof StaticBooleanSymbol) {
+            StaticBooleanSymbol staticBooleanSymbol = (StaticBooleanSymbol)object;
+            program.add(Instructions.assertInstruction(Register.ZERO, new Offset(staticBooleanSymbol.getOffset())));
         } else {
             throw new GeneratorException();
         }
@@ -281,6 +284,12 @@ public class Generator {
                     break;
                 case "!=" :
                     program.add(Instructions.register(OpCode.NE, Register.S2, Register.S0, Register.S1));
+                    break;
+                case "||" :
+                    program.add(Instructions.register(OpCode.OR, Register.S2, Register.S0, Register.S1));
+                    break;
+                case "&&" :
+                    program.add(Instructions.register(OpCode.AND, Register.S2, Register.S0, Register.S1));
                     break;
             }
             program.add(Instruction.storeToMemory(Register.S2, result));

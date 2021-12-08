@@ -52,7 +52,7 @@ public class CharacterReader extends Reader<String> {
         if(!hasNext()){
             return false;
         }
-        return "+-*/<>=!&|^()".contains(peek());
+        return "+-*/<>=!&|^()%".contains(peek());
     }
     public boolean nextIsLetter() {
         if(!hasNext()){
@@ -178,6 +178,12 @@ public class CharacterReader extends Reader<String> {
             }else {
                 return new Token(TokenType.NOT, next());
             }
+        }
+        if(nextIs("|") && nextNextIs("|")){
+            return new Token(TokenType.OR, next()+next());
+        }
+        if(nextIs("&") && nextNextIs("&")){
+            return new Token(TokenType.AND, next()+next());
         }
         throw new LexerException();
     }

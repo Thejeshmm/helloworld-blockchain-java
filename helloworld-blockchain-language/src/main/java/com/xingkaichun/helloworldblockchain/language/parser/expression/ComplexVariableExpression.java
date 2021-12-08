@@ -26,4 +26,11 @@ public class ComplexVariableExpression extends Expression {
     public String getVariableName(){
         return this.lexeme.getValue();
     }
+
+    public ComplexSonExpression getComplexSonExpression(){
+        if(this.children.isEmpty()){
+            return null;
+        }
+        return (ComplexSonExpression) this.getChildren().get(0);
+    }
 }
