@@ -101,7 +101,9 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                         }
                         HVM hvm = new HVM();
                         baseData.resetKeyPrefix(inputs[0]);
-                        String executeResult = hvm.execute(baseData,contractPath,args);
+                        hvm.baseData = baseData;
+                        hvm.thisObject = new ThisObjectImpl(null,transactionOutput);
+                        String executeResult = hvm.execute(contractPath,args);
                         System.out.println(executeResult);
                         Map<String,String> data = hvm.virtualMachine.getData();
                         baseData.addData(data);

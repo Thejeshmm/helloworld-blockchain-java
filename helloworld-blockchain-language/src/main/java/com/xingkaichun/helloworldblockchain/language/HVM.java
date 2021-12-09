@@ -10,13 +10,18 @@ import com.xingkaichun.helloworldblockchain.language.translator.TAProgram;
 import com.xingkaichun.helloworldblockchain.language.translator.Translator;
 import com.xingkaichun.helloworldblockchain.language.util.TokenReader;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.BaseData;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.ThisObject;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachine;
 
 import java.util.List;
 
 public class HVM {
+
     public VirtualMachine virtualMachine;
-    public String execute(BaseData baseData,String fileName, String[] args) {
+    public BaseData baseData;
+    public ThisObject thisObject;
+
+    public String execute(String fileName, String[] args) {
         TokenReader reader = Lexer.fromFile(fileName);
 
         ASTNode astNode = Parser.parse(reader);
@@ -28,17 +33,24 @@ public class HVM {
         Integer entry = program.getEntry();
         List<Instruction> instructions = program.getInstructions();
 
-        virtualMachine = new VirtualMachine(statics,instructions,entry);
-        virtualMachine.baseData = baseData;
-        if(args != null && args.length != 0){
-            int address = virtualMachine.newStrings(args);
-            virtualMachine.getMemory()[virtualMachine.getMemory().length-3] = String.valueOf(address);
-        }
-        int thisAddress = virtualMachine.newThis();
-        virtualMachine.THIS_ADDRESS = thisAddress;
+        this.virtualMachine = new VirtualMachine(statics,instructions,entry);
 
-        virtualMachine.setDebug(false);
-        virtualMachine.run();
-        return virtualMachine.getVmResult();
+        if(this.baseData != null){
+            this.virtualMachine.baseData = this.baseData;
+        }
+
+        if(args != null && args.length != 0){
+            int argsAddress = this.virtualMachine.newStrings(args);
+            this.virtualMachine.setArgsAddress(argsAddress);
+        }
+
+        if(thisObject != null){
+            thisObject.setVirtualMachine(virtualMachine);
+            this.virtualMachine.setThisAddress(thisObject.newThisAddress());
+        }
+
+        this.virtualMachine.setDebug(false);
+        this.virtualMachine.run();
+        return this.virtualMachine.getVmResult();
     }
 }

@@ -317,27 +317,27 @@ public class VirtualMachine {
         }
     }
 
-    private void storeArrayIndex(int arrayBaseAddress,int index,String value) {
+    public void storeArrayIndex(int arrayBaseAddress,int index,String value) {
         if(index < 0 || heapMemory.getHeapMemoryValue(arrayBaseAddress) <= index){
             throw new VirtualMachineException();
         }
         heapMemory.setHeapMemoryValue(ARRAY_HEAD_SIZE+arrayBaseAddress+index, value);
     }
 
-    private void storeObjectField(int objectBaseAddress, int objectFieldIndex, int objectValueAddress) {
+    public void storeObjectField(int objectBaseAddress, int objectFieldIndex, int objectValueAddress) {
         int objectFieldBaseAddress = OBJECT_HEAD_SIZE + objectBaseAddress + objectFieldIndex * 2;
         heapMemory.setHeapMemoryValue(objectFieldBaseAddress+0, NON_NULL_OBJECT_FLAG);
         heapMemory.setHeapMemoryValue(objectFieldBaseAddress+1, objectValueAddress);
     }
 
-    private int newArray(int arrayLength) {
+    public int newArray(int arrayLength) {
         int arrayMemorySize = ARRAY_HEAD_SIZE + arrayLength;
         int arrayMemoryAddress = heapMemory.memoryAllocation(arrayMemorySize);
         heapMemory.setHeapMemoryValue(arrayMemoryAddress, arrayLength);
         return arrayMemoryAddress;
     }
 
-    private int newObject(int objectFieldCount) {
+    public int newObject(int objectFieldCount) {
         int objectMemorySize = OBJECT_HEAD_SIZE + objectFieldCount * 2;
         int objectMemoryAddress = heapMemory.memoryAllocation(objectMemorySize);
         heapMemory.setHeapMemoryValue(objectMemoryAddress,objectMemorySize);
@@ -368,16 +368,6 @@ public class VirtualMachine {
             storeArrayIndex(stringArrayAddress,i,String.valueOf(newString(values[i])));
         }
         return stringArrayAddress;
-    }
-    public int newThis() {
-        int thisAddress = newObject(1);
-        int transactionAddress = newObject(2);
-        storeObjectField(thisAddress,0,transactionAddress);
-        int intFromAddress = newString("1111222233334444");
-        int intToAddress = newString("6666777788889999");
-        storeObjectField(transactionAddress,0,intFromAddress);
-        storeObjectField(transactionAddress,1,intToAddress);
-        return thisAddress;
     }
     public int newString(String value) {
         int stringAddress = newObject(1);
@@ -457,5 +447,13 @@ public class VirtualMachine {
             return null;
         }
         return baseData.getBaseData(key);
+    }
+
+    public void setArgsAddress(int argsAddress) {
+        getMemory()[getMemory().length-3] = String.valueOf(argsAddress);
+    }
+
+    public void setThisAddress(int thisAddress) {
+        this.THIS_ADDRESS = thisAddress;
     }
 }
