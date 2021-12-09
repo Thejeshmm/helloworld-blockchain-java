@@ -73,15 +73,6 @@ public class TransactionOutput implements Serializable {
      * 冗余
      */
     private long transactionOutputHeight;
-    /**
-     * 部署的合约
-     */
-    private String contract;
-    /**
-     * 执行合约
-     */
-    private String executeContract;
-
     //region get set
 
     public long getValue() {
@@ -162,22 +153,6 @@ public class TransactionOutput implements Serializable {
 
     public void setTransactionHash(String transactionHash) {
         this.transactionHash = transactionHash;
-    }
-
-    public String getContract() {
-        return contract;
-    }
-
-    public void setContract(String contract) {
-        this.contract = contract;
-    }
-
-    public String getExecuteContract() {
-        return executeContract;
-    }
-
-    public void setExecuteContract(String executeContract) {
-        this.executeContract = executeContract;
     }
     //endregion
 }

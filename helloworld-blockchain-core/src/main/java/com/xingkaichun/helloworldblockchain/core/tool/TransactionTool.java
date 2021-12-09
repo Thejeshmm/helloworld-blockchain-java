@@ -8,6 +8,7 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionTy
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
 import com.xingkaichun.helloworldblockchain.netcore.dto.TransactionDto;
 import com.xingkaichun.helloworldblockchain.util.LogUtil;
+import com.xingkaichun.helloworldblockchain.util.StringUtil;
 import com.xingkaichun.helloworldblockchain.util.StringsUtil;
 
 import java.util.ArrayList;
@@ -275,5 +276,15 @@ public class TransactionTool {
         //最大值是2^64
         //小数保留位是0位
         return true;
+    }
+
+    public static boolean isContractTranction(Transaction transaction) {
+        return (!StringUtil.isEmpty(transaction.getDeployContract())) || (!StringUtil.isEmpty(transaction.getExecuteContract()));
+    }
+    public static boolean isDeployContractTranction(Transaction transaction) {
+        return !StringUtil.isEmpty(transaction.getDeployContract());
+    }
+    public static boolean isExecuteContractTranction(Transaction transaction) {
+        return !StringUtil.isEmpty(transaction.getExecuteContract());
     }
 }

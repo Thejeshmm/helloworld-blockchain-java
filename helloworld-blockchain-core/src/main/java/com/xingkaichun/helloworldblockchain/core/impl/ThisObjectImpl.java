@@ -1,5 +1,6 @@
 package com.xingkaichun.helloworldblockchain.core.impl;
 
+import com.xingkaichun.helloworldblockchain.core.model.transaction.Transaction;
 import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionOutput;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.ThisObject;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachine;
@@ -8,7 +9,7 @@ public class ThisObjectImpl extends ThisObject {
 
     private TransactionOutput transactionOutput;
 
-    public ThisObjectImpl(VirtualMachine virtualMachine, TransactionOutput transactionOutput) {
+    public ThisObjectImpl(VirtualMachine virtualMachine, Transaction transaction) {
         this.virtualMachine = virtualMachine;
         this.transactionOutput = transactionOutput;
     }

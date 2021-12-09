@@ -56,6 +56,14 @@ public class Transaction implements Serializable {
     private long blockHeight;
 
 
+    /**
+     * 部署的合约
+     */
+    private String deployContract;
+    /**
+     * 执行合约
+     */
+    private String executeContract;
 
 
     //region get set
@@ -116,5 +124,20 @@ public class Transaction implements Serializable {
         this.blockHeight = blockHeight;
     }
 
+    public String getDeployContract() {
+        return deployContract;
+    }
+
+    public void setDeployContract(String deployContract) {
+        this.deployContract = deployContract;
+    }
+
+    public String getExecuteContract() {
+        return executeContract;
+    }
+
+    public void setExecuteContract(String executeContract) {
+        this.executeContract = executeContract;
+    }
     //endregion
 }
