@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class BaseDataDefaultImpl extends BaseData {
 
-    private Map<String, String> tempData = new HashMap<>();
+    private Map<String, String> cacheData = new HashMap<>();
     private String dataPath;
     private String keyPrefix;
     private KvDbUtil.KvWriteBatch kvWriteBatch;
@@ -24,7 +24,7 @@ public class BaseDataDefaultImpl extends BaseData {
     @Override
     public String getBaseData(String key0) {
         String key = getKey(key0);
-        String value = tempData.get(key);
+        String value = cacheData.get(key);
         if(value != null){
             return value;
         }
@@ -43,14 +43,14 @@ public class BaseDataDefaultImpl extends BaseData {
         for(Map.Entry<String,String> entry:data.entrySet()){
             String key = getKey(entry.getKey());
             String value = entry.getValue();
-            tempData.put(key,value);
+            cacheData.put(key,value);
             kvWriteBatch.put(ByteUtil.stringToUtf8Bytes(key),ByteUtil.stringToUtf8Bytes(value));
         }
     }
 
-    public MapData getOldData() {
+    public MapData getPersistentDataByCacheKey() {
         MapData mapData = new MapData();
-        for(Map.Entry<String,String> entry:tempData.entrySet()){
+        for(Map.Entry<String,String> entry:cacheData.entrySet()){
             String key = entry.getKey();
             byte[] bytesValue = KvDbUtil.get(dataPath,ByteUtil.stringToUtf8Bytes(key));
             if(bytesValue == null || bytesValue.length == 0){
@@ -65,6 +65,7 @@ public class BaseDataDefaultImpl extends BaseData {
     private String getKey(String key){
         return keyPrefix + key;
     }
+
     public void resetKeyPrefix(String keyPrefix) {
         this.keyPrefix = keyPrefix;
     }

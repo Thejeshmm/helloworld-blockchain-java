@@ -110,7 +110,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                     baseData.addData(data);
                 }
             }
-            MapData mapData = baseData.getOldData();
+            MapData mapData = baseData.getPersistentDataByCacheKey();
             kvWriteBatch.put(contractDataKey, EncodeDecodeTool.encode(mapData));
         }else{
             byte[] bytesValue = KvDbUtil.get(getBlockchainDatabasePath(),contractDataKey);
