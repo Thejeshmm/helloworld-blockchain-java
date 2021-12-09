@@ -84,6 +84,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             }
         }
     }
+
     //有关合约的交易，只允许有且只有一个交易输入，有且只有一个交易输出。
     private void executeContract(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
         byte[] contractDataKey = BlockchainDatabaseKeyTool.buildContractDataKey(block.getHash());
