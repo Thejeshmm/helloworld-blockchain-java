@@ -55,4 +55,7 @@ public class SystemUtil {
         }
     }
 
+    public static String lineSeparator() {
+        return System.lineSeparator();
+    }
 }

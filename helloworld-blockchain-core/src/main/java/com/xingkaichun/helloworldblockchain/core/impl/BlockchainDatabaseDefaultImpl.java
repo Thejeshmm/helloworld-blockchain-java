@@ -77,9 +77,9 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
         for(Transaction transaction : transactions){
             if(TransactionTool.isDeployContractTranction(transaction)){
                 if(!StringUtil.isEmpty(transaction.getDeployContract())){
-                    String directory = coreConfiguration.getCorePath() + "\\contract\\" + transaction.getTransactionHash();
+                    String directory = coreConfiguration.getCorePath() + SystemUtil.lineSeparator() + "contract" + SystemUtil.lineSeparator() + transaction.getTransactionHash();
                     FileUtil.makeDirectory(directory);
-                    FileUtil.write(directory+"\\"+"contract.helloworld",ByteUtil.utf8BytesToString(ByteUtil.hexStringToBytes(transaction.getDeployContract())));
+                    FileUtil.write(directory + SystemUtil.lineSeparator() + "contract.helloworld", ByteUtil.utf8BytesToString(ByteUtil.hexStringToBytes(transaction.getDeployContract())));
                 }
             }
         }
@@ -93,8 +93,8 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             for(Transaction transaction : transactions){
                 if(TransactionTool.isExecuteContractTranction(transaction)){
                     String[] inputs = transaction.getExecuteContract().split(",");
-                    String contractDir = coreConfiguration.getCorePath() + "\\contract\\" + inputs[0];
-                    String contractPath = contractDir + "\\"+"contract.helloworld";
+                    String contractDir = coreConfiguration.getCorePath() + SystemUtil.lineSeparator() + "contract" + SystemUtil.lineSeparator() + inputs[0];
+                    String contractPath = contractDir + SystemUtil.lineSeparator() + "contract.helloworld";
                     String[] args = null;
                     if(inputs.length >1){
                         args = Arrays.copyOfRange(inputs,1,inputs.length);
