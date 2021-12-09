@@ -50,6 +50,7 @@ public class FileUtil {
             String line;
             while((line = br.readLine()) != null){
                 text += line;
+                text += System.lineSeparator();
             }
             return text;
         } catch (IOException e) {
