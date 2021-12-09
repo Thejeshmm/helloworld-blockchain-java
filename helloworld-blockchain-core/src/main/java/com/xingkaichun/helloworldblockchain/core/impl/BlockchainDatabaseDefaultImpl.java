@@ -89,7 +89,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
     private void executeContract(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
         byte[] contractDataKey = BlockchainDatabaseKeyTool.buildContractDataKey(block.getHash());
         if(BlockchainAction.ADD_BLOCK == blockchainAction){
-            BaseData baseData = new BaseDataDefaultImpl(kvWriteBatch,getBlockchainDatabasePath());
+            BaseDataDefaultImpl baseData = new BaseDataDefaultImpl(kvWriteBatch,getBlockchainDatabasePath());
             List<Transaction> transactions = block.getTransactions();
             for(Transaction transaction : transactions){
                 if(TransactionTool.isExecuteContractTranction(transaction)){
