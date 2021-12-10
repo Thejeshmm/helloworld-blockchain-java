@@ -11,7 +11,6 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionTy
 import com.xingkaichun.helloworldblockchain.core.tool.*;
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
 import com.xingkaichun.helloworldblockchain.language.HVM;
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.BaseData;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.MapData;
 import com.xingkaichun.helloworldblockchain.netcore.dto.*;
 import com.xingkaichun.helloworldblockchain.setting.GenesisBlockSetting;

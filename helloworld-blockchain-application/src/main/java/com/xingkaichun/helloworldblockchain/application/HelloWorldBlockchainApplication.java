@@ -14,6 +14,6 @@ public class HelloWorldBlockchainApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HelloWorldBlockchainApplication.class, args);
-		//SystemUtil.callDefaultBrowser("http://localhost/");
+		SystemUtil.callDefaultBrowser("http://localhost/");
 	}
 }

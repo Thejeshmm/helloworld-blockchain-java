@@ -5,8 +5,6 @@ import com.xingkaichun.helloworldblockchain.language.generator.operand.Label;
 import com.xingkaichun.helloworldblockchain.language.generator.operand.Offset;
 import com.xingkaichun.helloworldblockchain.language.generator.operand.Register;
 
-import java.util.List;
-
 /**
  * @author xingkaichun@ceair.com
  */

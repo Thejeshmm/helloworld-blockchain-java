@@ -2,7 +2,6 @@ package com.xingkaichun.helloworldblockchain.core;
 
 import com.xingkaichun.helloworldblockchain.core.model.Block;
 import com.xingkaichun.helloworldblockchain.core.model.transaction.Transaction;
-import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionOutput;
 import com.xingkaichun.helloworldblockchain.core.model.wallet.AutoBuildTransactionRequest;
 import com.xingkaichun.helloworldblockchain.core.model.wallet.AutoBuildTransactionResponse;
 import com.xingkaichun.helloworldblockchain.netcore.dto.BlockDto;
