@@ -81,7 +81,12 @@ public class KvDbUtil {
             DB db = getDb(dbPath);
             DBIterator iterator = db.iterator();
             for (iterator.seek(bytesKey); iterator.hasNext(); iterator.next()) {
-                byte[] byteValue = iterator.peekNext().getValue();
+                Map.Entry<byte[], byte[]> entry = iterator.peekNext();
+                byte[] byteKey = entry.getKey();
+                if(!ByteUtil.contains(byteKey,bytesKey)){
+                    break;
+                }
+                byte[] byteValue = entry.getValue();
                 if(byteValue == null || byteValue.length==0){
                     //注意，用levelDB这里确是continue
                     continue;
