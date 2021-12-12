@@ -66,6 +66,9 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
     @Override
     public AutomaticBuildTransactionResponse automaticBuildTransaction(AutomaticBuildTransactionRequest request) {
         AutoBuildTransactionRequest autoBuildTransactionRequest = new AutoBuildTransactionRequest();
+        autoBuildTransactionRequest.setFee(request.getFee());
+        autoBuildTransactionRequest.setPayers(payersVos2payers(request.getPayers()));
+        autoBuildTransactionRequest.setChangePayeeAddress(request.getChangePayeeAddress());
         autoBuildTransactionRequest.setNonChangePayees(payeeVos2payees(request.getNonChangePayees()));
 
         AutoBuildTransactionResponse autoBuildTransactionResponse = blockchainNetCore.getBlockchainCore().autoBuildTransaction(autoBuildTransactionRequest);
@@ -152,5 +155,24 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
         payeeVo.setAddress(payee.getAddress());
         payeeVo.setValue(payee.getValue());
         return payeeVo;
+    }
+    private List<Payer> payersVos2payers(List<PayerVo> payerVos){
+        List<Payer> payers = new ArrayList<>();
+        if(payerVos != null){
+            for (PayerVo payerVo:payerVos) {
+                Payer payer = payersVo2payer(payerVo);
+                payers.add(payer);
+            }
+        }
+        return payers;
+    }
+    private Payer payersVo2payer(PayerVo payerVo){
+        Payer payer = new Payer();
+        payer.setAddress(payerVo.getAddress());
+        payer.setPrivateKey(payerVo.getPrivateKey());
+        payer.setTransactionHash(payerVo.getTransactionHash());
+        payer.setTransactionOutputIndex(payerVo.getTransactionOutputIndex());
+        payer.setValue(payerVo.getValue());
+        return payer;
     }
 }

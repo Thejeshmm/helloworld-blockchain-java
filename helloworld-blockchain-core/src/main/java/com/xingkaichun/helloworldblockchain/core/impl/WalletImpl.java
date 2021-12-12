@@ -128,55 +128,96 @@ public class WalletImpl extends Wallet {
 
         //创建付款方
         List<Payer> payers = new ArrayList<>();
-        //遍历钱包里的账户,用钱包里的账户付款
-        List<Account> allAccounts = getNonZeroBalanceAccounts();
-        if(allAccounts != null){
-            for(Account account:allAccounts){
-                List<TransactionOutput> utxos = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
-                if(utxos != null && !utxos.isEmpty()){
-                    for(TransactionOutput utxo:utxos){
-                        if(utxo.getValue() <= 0){
-                            continue;
-                        }
-                        //构建一个新的付款方
-                        Payer payer = new Payer();
-                        payer.setPrivateKey(account.getPrivateKey());
-                        payer.setAddress(account.getAddress());
-                        payer.setTransactionHash(utxo.getTransactionHash());
-                        payer.setTransactionOutputIndex(utxo.getTransactionOutputIndex());
-                        payer.setValue(utxo.getValue());
-                        payers.add(payer);
-                        //设置默认手续费
-                        long fee = 0L;
-                        boolean haveEnoughMoneyToPay = haveEnoughMoneyToPay(payers,nonChangePayees,fee);
-                        if(haveEnoughMoneyToPay){
-                            //创建一个找零账户，并将找零账户保存在钱包里。
-                            Account changeAccount = createAndSaveAccount();
-                            //创建一个找零收款方
-                            Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.getAddress(),fee);
-                            //创建收款方(收款方=[非找零]收款方+[找零]收款方)
-                            List<Payee> payees = new ArrayList<>();
-                            payees.addAll(nonChangePayees);
-                            if(changePayee != null){
-                                payees.add(changePayee);
+        List<Payer> requestPayers = request.getPayers();
+        if(requestPayers == null || requestPayers.isEmpty()){
+            //遍历钱包里的账户,用钱包里的账户付款
+            List<Account> allAccounts = getNonZeroBalanceAccounts();
+            if(allAccounts != null){
+                for(Account account:allAccounts){
+                    List<TransactionOutput> utxos = blockchainDatabase.queryUnspentTransactionOutputByAddress(account.getAddress());
+                    if(utxos != null && !utxos.isEmpty()){
+                        for(TransactionOutput utxo:utxos){
+                            if(utxo.getValue() <= 0){
+                                continue;
                             }
-                            //构造交易
-                            TransactionDto transactionDto = buildTransaction(payers,payees);
-                            AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
-                            response.setBuildTransactionSuccess(true);
-                            response.setTransaction(transactionDto);
-                            response.setTransactionHash(TransactionDtoTool.calculateTransactionHash(transactionDto));
-                            response.setFee(fee);
-                            response.setPayers(payers);
-                            response.setNonChangePayees(nonChangePayees);
-                            response.setChangePayee(changePayee);
-                            response.setPayees(payees);
-                            return response;
+                            //构建一个新的付款方
+                            Payer payer = new Payer();
+                            payer.setPrivateKey(account.getPrivateKey());
+                            payer.setAddress(account.getAddress());
+                            payer.setTransactionHash(utxo.getTransactionHash());
+                            payer.setTransactionOutputIndex(utxo.getTransactionOutputIndex());
+                            payer.setValue(utxo.getValue());
+                            payers.add(payer);
+                            //设置默认手续费
+                            long fee = 0L;
+                            boolean haveEnoughMoneyToPay = haveEnoughMoneyToPay(payers,nonChangePayees,fee);
+                            if(haveEnoughMoneyToPay){
+                                //创建一个找零账户，并将找零账户保存在钱包里。
+                                Account changeAccount = createAndSaveAccount();
+                                //创建一个找零收款方
+                                Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.getAddress(),fee);
+                                //创建收款方(收款方=[非找零]收款方+[找零]收款方)
+                                List<Payee> payees = new ArrayList<>();
+                                payees.addAll(nonChangePayees);
+                                if(changePayee != null){
+                                    payees.add(changePayee);
+                                }
+                                //构造交易
+                                TransactionDto transactionDto = buildTransaction(payers,payees);
+                                AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
+                                response.setBuildTransactionSuccess(true);
+                                response.setTransaction(transactionDto);
+                                response.setTransactionHash(TransactionDtoTool.calculateTransactionHash(transactionDto));
+                                response.setFee(fee);
+                                response.setPayers(payers);
+                                response.setNonChangePayees(nonChangePayees);
+                                response.setChangePayee(changePayee);
+                                response.setPayees(payees);
+                                return response;
+                            }
                         }
                     }
                 }
             }
+        }else {
+            for(Payer requestPayer : requestPayers){
+                TransactionOutput utxo = blockchainDatabase.queryUnspentTransactionOutputByTransactionOutputId(requestPayer.getTransactionHash(),requestPayer.getTransactionOutputIndex());
+                if(utxo == null || utxo.getValue()<=0){
+                    continue;
+                }
+                //构建一个新的付款方
+                Payer payer = new Payer();
+                payer.setPrivateKey(requestPayer.getPrivateKey());
+                payer.setAddress(utxo.getAddress());
+                payer.setTransactionHash(utxo.getTransactionHash());
+                payer.setTransactionOutputIndex(utxo.getTransactionOutputIndex());
+                payer.setValue(utxo.getValue());
+                payers.add(payer);
+            }
+            long requestFee = request.getFee();
+            String requestChangePayeeAddress = request.getChangePayeeAddress();
+            //创建一个找零收款方
+            Payee changePayee = createChangePayee(payers,nonChangePayees,requestChangePayeeAddress,requestFee);
+            //创建收款方(收款方=[非找零]收款方+[找零]收款方)
+            List<Payee> payees = new ArrayList<>();
+            payees.addAll(nonChangePayees);
+            if(changePayee != null){
+                payees.add(changePayee);
+            }
+            //构造交易
+            TransactionDto transactionDto = buildTransaction(payers,payees);
+            AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
+            response.setBuildTransactionSuccess(true);
+            response.setTransaction(transactionDto);
+            response.setTransactionHash(TransactionDtoTool.calculateTransactionHash(transactionDto));
+            response.setFee(requestFee);
+            response.setPayers(payers);
+            response.setNonChangePayees(nonChangePayees);
+            response.setChangePayee(changePayee);
+            response.setPayees(payees);
+            return response;
         }
+
         AutoBuildTransactionResponse response = new AutoBuildTransactionResponse();
         response.setMessage(PayAlert.NOT_ENOUGH_MONEY_TO_PAY);
         response.setBuildTransactionSuccess(false);
