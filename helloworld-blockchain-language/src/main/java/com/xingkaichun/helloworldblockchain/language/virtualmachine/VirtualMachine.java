@@ -310,6 +310,9 @@ public class VirtualMachine {
             if(s0 == null){
                 s0 = getBaseString(s1);
             }
+            if(s0 == null){
+                s0 = "";
+            }
             int stringAddress = newString(s0);
             setRegisterValue(r0,stringAddress);
         }else{

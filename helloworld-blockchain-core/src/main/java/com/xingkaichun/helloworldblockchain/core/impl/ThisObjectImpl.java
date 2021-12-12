@@ -16,14 +16,12 @@ public class ThisObjectImpl extends ThisObject {
 
     public int newThisAddress(){
         int thisAddress = virtualMachine.newObject(1);
-        int transactionAddress = virtualMachine.newObject(2);
+        int transactionAddress = virtualMachine.newObject(1);
         virtualMachine.storeObjectField(thisAddress,0,transactionAddress);
         String publicKeyHash = transaction.getInputs().get(0).getInputScript().get(3);
         String address = AccountUtil.addressFromPublicKeyHash(publicKeyHash);
         int intFromAddress = virtualMachine.newString(address);
-        int intToAddress = virtualMachine.newString(transaction.getOutputs().get(0).getAddress());
         virtualMachine.storeObjectField(transactionAddress,0,intFromAddress);
-        virtualMachine.storeObjectField(transactionAddress,1,intToAddress);
         return thisAddress;
     }
 }

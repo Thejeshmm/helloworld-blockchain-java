@@ -13,12 +13,10 @@ public class ThisObjectImpl extends ThisObject{
 
     public int newThisAddress(){
         int thisAddress = virtualMachine.newObject(1);
-        int transactionAddress = virtualMachine.newObject(2);
+        int transactionAddress = virtualMachine.newObject(1);
         virtualMachine.storeObjectField(thisAddress,0,transactionAddress);
         int intFromAddress = virtualMachine.newString(fromAddress);
-        int intToAddress = virtualMachine.newString(toAddress);
         virtualMachine.storeObjectField(transactionAddress,0,intFromAddress);
-        virtualMachine.storeObjectField(transactionAddress,1,intToAddress);
         return thisAddress;
     }
 }
