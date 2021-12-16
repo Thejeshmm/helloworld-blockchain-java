@@ -1,4 +1,4 @@
-package com.xingkaichun.helloworldblockchain.language.virtualmachine;
+package com.xingkaichun.helloworldblockchain.core.language;
 
 import java.util.HashMap;
 

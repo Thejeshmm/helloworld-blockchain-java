@@ -1,6 +1,8 @@
 package com.xingkaichun.helloworldblockchain.core.impl;
 
 import com.xingkaichun.helloworldblockchain.core.*;
+import com.xingkaichun.helloworldblockchain.core.language.BaseDataDefaultImpl;
+import com.xingkaichun.helloworldblockchain.core.language.MapData;
 import com.xingkaichun.helloworldblockchain.core.model.Block;
 import com.xingkaichun.helloworldblockchain.core.model.enums.BlockchainAction;
 import com.xingkaichun.helloworldblockchain.core.model.script.*;
@@ -11,7 +13,6 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionTy
 import com.xingkaichun.helloworldblockchain.core.tool.*;
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
 import com.xingkaichun.helloworldblockchain.language.HVM;
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.MapData;
 import com.xingkaichun.helloworldblockchain.netcore.dto.*;
 import com.xingkaichun.helloworldblockchain.setting.GenesisBlockSetting;
 import com.xingkaichun.helloworldblockchain.util.*;
@@ -92,7 +93,8 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
             List<Transaction> transactions = block.getTransactions();
             for(Transaction transaction : transactions){
                 if(TransactionTool.isExecuteContractTranction(transaction)){
-                    String[] inputs = transaction.getExecuteContract().split(",");
+                    String executeContract = ByteUtil.utf8BytesToString(ByteUtil.hexStringToBytes(transaction.getExecuteContract()));
+                    String[] inputs = executeContract.split(",");
                     String contractDir = coreConfiguration.getCorePath() + SystemUtil.lineSeparator() + "contract" + SystemUtil.lineSeparator() + inputs[0];
                     String contractPath = contractDir + SystemUtil.lineSeparator() + "contract.helloworld";
                     String[] args = null;

@@ -1,7 +1,6 @@
-package com.xingkaichun.helloworldblockchain.core.impl;
+package com.xingkaichun.helloworldblockchain.core.language;
 
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.BaseData;
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.MapData;
 import com.xingkaichun.helloworldblockchain.util.ByteUtil;
 import com.xingkaichun.helloworldblockchain.util.KvDbUtil;
 
@@ -28,7 +27,7 @@ public class BaseDataDefaultImpl extends BaseData {
         if(value != null){
             return value;
         }
-        byte[] bytesValue = KvDbUtil.get(dataPath,ByteUtil.stringToUtf8Bytes(key));
+        byte[] bytesValue = KvDbUtil.get(dataPath, ByteUtil.stringToUtf8Bytes(key));
         if(bytesValue == null){
             return null;
         }

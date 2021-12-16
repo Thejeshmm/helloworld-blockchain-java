@@ -1,6 +1,9 @@
-package com.xingkaichun.helloworldblockchain.language.virtualmachine;
+package com.xingkaichun.helloworldblockchain.core.language;
 
-public class ThisObjectImpl extends ThisObject{
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.ThisObject;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachine;
+
+public class ThisObjectImpl extends ThisObject {
 
     private String fromAddress;
     private String toAddress;

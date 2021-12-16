@@ -279,7 +279,7 @@ public class TransactionTool {
     }
 
     public static boolean isContractTranction(Transaction transaction) {
-        return getTransactionInputCount(transaction)==1 && getTransactionOutputCount(transaction)==1 && (!StringUtil.isEmpty(transaction.getDeployContract())) || (!StringUtil.isEmpty(transaction.getExecuteContract()));
+        return getTransactionInputCount(transaction)==1 && getTransactionOutputCount(transaction)>0 && (!StringUtil.isEmpty(transaction.getDeployContract())) || (!StringUtil.isEmpty(transaction.getExecuteContract()));
     }
     public static boolean isDeployContractTranction(Transaction transaction) {
         return  isContractTranction(transaction) && (!StringUtil.isEmpty(transaction.getDeployContract()));

@@ -21,9 +21,9 @@ public class HVM {
     public BaseData baseData;
     public ThisObject thisObject;
 
-    public String execute(String fileName, String[] args) {
-        TokenReader reader = Lexer.fromFile(fileName);
+    public String execute(String filePath, String[] args) {
 
+        TokenReader reader = Lexer.fromFile(filePath);
         ASTNode astNode = Parser.parse(reader);
         Translator translator = new Translator();
         TAProgram taProgram = translator.translate(astNode);
@@ -45,8 +45,8 @@ public class HVM {
         }
 
         if(thisObject != null){
-            thisObject.setVirtualMachine(virtualMachine);
-            this.virtualMachine.setThisAddress(thisObject.newThisAddress());
+            this.thisObject.setVirtualMachine(this.virtualMachine);
+            this.virtualMachine.setThisAddress(this.thisObject.newThisAddress());
         }
 
         this.virtualMachine.setDebug(false);
