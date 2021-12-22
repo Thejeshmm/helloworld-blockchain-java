@@ -29,6 +29,9 @@ public class ByteUtil {
      * @param hexString 16进制字符串，该属性值的长度一定是2的整数倍
      */
     public static byte[] hexStringToBytes(String hexString) {
+        if(hexString == null){
+            return null;
+        }
         return Hex.decode(hexString);
     }
 
@@ -83,6 +86,12 @@ public class ByteUtil {
      * 拼接数组(数组数量为2个)。
      */
     public static byte[] concatenate(byte[] bytes1,byte[] bytes2) {
+        if(bytes1 == null){
+            return bytes2;
+        }
+        if(bytes2 == null){
+            return bytes1;
+        }
         return Bytes.concat(bytes1,bytes2);
     }
     /**
@@ -103,7 +112,8 @@ public class ByteUtil {
      * 计算[传入字节数组]的长度，然后将长度转为8个字节的字节数组(大端)，然后将长度字节数组拼接在[传入字节数组]前，然后返回。
      */
     public static byte[] concatenateLength(byte[] value) {
-        return concatenate(uint64ToBytes(value.length),value);
+        int valueLength = value==null?0:value.length;
+        return concatenate(uint64ToBytes(valueLength),value);
     }
 
     /**

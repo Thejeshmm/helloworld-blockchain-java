@@ -78,8 +78,11 @@ public class TransactionDtoTool {
             }
         }
 
-        byte[] data = ByteUtil.concatenate(ByteUtil.flatAndConcatenateLength(bytesUnspentTransactionOutputs),
-                ByteUtil.flatAndConcatenateLength(bytesTransactionOutputs));
+        byte[] bytesDeployContract = ByteUtil.hexStringToBytes(transactionDto.getDeployContract());
+        byte[] bytesExecuteContract = ByteUtil.hexStringToBytes(transactionDto.getExecuteContract());
+
+        byte[] data = ByteUtil.concatenate4(ByteUtil.flatAndConcatenateLength(bytesUnspentTransactionOutputs),
+                ByteUtil.flatAndConcatenateLength(bytesTransactionOutputs),ByteUtil.concatenateLength(bytesDeployContract),ByteUtil.concatenateLength(bytesExecuteContract));
         return data;
     }
     /**
