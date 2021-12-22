@@ -6,6 +6,8 @@ public abstract class VirtualMachineDatabase {
 
     public abstract void putCache(String key, String value);
 
+    public abstract MapData getCurrentPersistentData();
+
     public abstract MapData getPersistentData();
 
     public abstract MapData getCacheData();
