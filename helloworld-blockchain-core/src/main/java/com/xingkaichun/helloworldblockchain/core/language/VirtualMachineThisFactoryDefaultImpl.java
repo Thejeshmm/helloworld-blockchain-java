@@ -1,20 +1,20 @@
 package com.xingkaichun.helloworldblockchain.core.language;
 
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.ThisObject;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachine;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachineThisFactory;
 
-public class ThisObjectImpl extends ThisObject {
+public class VirtualMachineThisFactoryDefaultImpl extends VirtualMachineThisFactory {
 
     private String fromAddress;
     private String toAddress;
 
-    public ThisObjectImpl(VirtualMachine virtualMachine, String fromAddress, String toAddress) {
+    public VirtualMachineThisFactoryDefaultImpl(VirtualMachine virtualMachine, String fromAddress, String toAddress) {
         this.virtualMachine = virtualMachine;
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
     }
 
-    public int newThisAddress(){
+    public int getThisAddress(){
         int thisAddress = virtualMachine.newObject(1);
         int transactionAddress = virtualMachine.newObject(1);
         virtualMachine.storeObjectField(thisAddress,0,transactionAddress);

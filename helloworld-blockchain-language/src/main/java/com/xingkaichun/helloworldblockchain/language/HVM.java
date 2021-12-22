@@ -9,8 +9,8 @@ import com.xingkaichun.helloworldblockchain.language.parser.Parser;
 import com.xingkaichun.helloworldblockchain.language.translator.TAProgram;
 import com.xingkaichun.helloworldblockchain.language.translator.Translator;
 import com.xingkaichun.helloworldblockchain.language.util.TokenReader;
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.BaseData;
-import com.xingkaichun.helloworldblockchain.language.virtualmachine.ThisObject;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachineDatabase;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachineThisFactory;
 import com.xingkaichun.helloworldblockchain.language.virtualmachine.VirtualMachine;
 
 import java.util.List;
@@ -18,8 +18,8 @@ import java.util.List;
 public class HVM {
 
     public VirtualMachine virtualMachine;
-    public BaseData baseData;
-    public ThisObject thisObject;
+    public VirtualMachineDatabase virtualMachineDatabase;
+    public VirtualMachineThisFactory virtualMachineThisFactory;
 
     public String execute(String filePath, String[] args) {
 
@@ -35,8 +35,8 @@ public class HVM {
 
         this.virtualMachine = new VirtualMachine(statics,instructions,entry);
 
-        if(this.baseData != null){
-            this.virtualMachine.baseData = this.baseData;
+        if(this.virtualMachineDatabase != null){
+            this.virtualMachine.virtualMachineDatabase = this.virtualMachineDatabase;
         }
 
         if(args != null && args.length != 0){
@@ -44,9 +44,9 @@ public class HVM {
             this.virtualMachine.setArgsAddress(argsAddress);
         }
 
-        if(thisObject != null){
-            this.thisObject.setVirtualMachine(this.virtualMachine);
-            this.virtualMachine.setThisAddress(this.thisObject.newThisAddress());
+        if(virtualMachineThisFactory != null){
+            this.virtualMachineThisFactory.setVirtualMachine(this.virtualMachine);
+            this.virtualMachine.setThisAddress(this.virtualMachineThisFactory.getThisAddress());
         }
 
         this.virtualMachine.setDebug(false);

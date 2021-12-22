@@ -1,8 +1,8 @@
 package com.xingkaichun.helloworldblockchain.core.impl;
 
 import com.xingkaichun.helloworldblockchain.core.*;
-import com.xingkaichun.helloworldblockchain.core.language.BaseDataDefaultImpl;
-import com.xingkaichun.helloworldblockchain.core.language.MapData;
+import com.xingkaichun.helloworldblockchain.core.language.VirtualMachineDatabaseDefaultImpl;
+import com.xingkaichun.helloworldblockchain.core.language.VirtualMachineThisFactoryDefaultImpl;
 import com.xingkaichun.helloworldblockchain.core.model.Block;
 import com.xingkaichun.helloworldblockchain.core.model.enums.BlockchainAction;
 import com.xingkaichun.helloworldblockchain.core.model.script.*;
@@ -13,14 +13,15 @@ import com.xingkaichun.helloworldblockchain.core.model.transaction.TransactionTy
 import com.xingkaichun.helloworldblockchain.core.tool.*;
 import com.xingkaichun.helloworldblockchain.crypto.AccountUtil;
 import com.xingkaichun.helloworldblockchain.language.HVM;
+import com.xingkaichun.helloworldblockchain.language.virtualmachine.MapData;
 import com.xingkaichun.helloworldblockchain.netcore.dto.*;
 import com.xingkaichun.helloworldblockchain.setting.GenesisBlockSetting;
 import com.xingkaichun.helloworldblockchain.util.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -89,7 +90,7 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
     private void executeContract(KvDbUtil.KvWriteBatch kvWriteBatch, Block block, BlockchainAction blockchainAction) {
         byte[] contractDataKey = BlockchainDatabaseKeyTool.buildContractDataKey(block.getHash());
         if(BlockchainAction.ADD_BLOCK == blockchainAction){
-            BaseDataDefaultImpl baseData = new BaseDataDefaultImpl(kvWriteBatch,getBlockchainDatabasePath());
+            VirtualMachineDatabaseDefaultImpl baseData = new VirtualMachineDatabaseDefaultImpl(getBlockchainDatabasePath());
             List<Transaction> transactions = block.getTransactions();
             for(Transaction transaction : transactions){
                 if(TransactionTool.isExecuteContractTranction(transaction)){
@@ -103,15 +104,18 @@ public class BlockchainDatabaseDefaultImpl extends BlockchainDatabase {
                     }
                     HVM hvm = new HVM();
                     baseData.resetKeyPrefix(inputs[0]);
-                    hvm.baseData = baseData;
-                    hvm.thisObject = new ThisObjectImpl(null,transaction);
+                    hvm.virtualMachineDatabase = baseData;
+                    hvm.virtualMachineThisFactory = new VirtualMachineThisFactoryDefaultImpl(null,null,null);
                     String executeResult = hvm.execute(contractPath,args);
                     System.out.println(executeResult);
-                    Map<String,String> data = hvm.virtualMachine.getData();
-                    baseData.addData(data);
                 }
             }
-            MapData mapData = baseData.getPersistentDataByCacheKey();
+            MapData cacheData = baseData.getCacheData();
+            for (HashMap.Entry<String, String> entry:cacheData.entrySet()) {
+                kvWriteBatch.put(ByteUtil.stringToUtf8Bytes(entry.getKey()),ByteUtil.stringToUtf8Bytes(entry.getValue()));
+            }
+
+            MapData mapData = baseData.getPersistentData();
             kvWriteBatch.put(contractDataKey, EncodeDecodeTool.encode(mapData));
         }else{
             byte[] bytesValue = KvDbUtil.get(getBlockchainDatabasePath(),contractDataKey);

@@ -9,7 +9,9 @@ import com.xingkaichun.helloworldblockchain.language.generator.operand.Register;
 import com.xingkaichun.helloworldblockchain.language.util.StringUtil;
 import com.xingkaichun.helloworldblockchain.language.util.VirtualMachineException;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class VirtualMachine {
 
@@ -20,7 +22,6 @@ public class VirtualMachine {
     private boolean debug = false;
     private HeapMemory heapMemory;
     private static final int NON_NULL_OBJECT_FLAG = 13579;
-    private Map<String,String> data = new HashMap<>();
 
     private static final int OBJECT_HEAD_SIZE = 1;
     private static final int ARRAY_HEAD_SIZE = 1;
@@ -301,19 +302,15 @@ public class VirtualMachine {
             Register r1 = (Register) instruction.getOperand(1);
             String s0 = getString(getRegisterValue(r0));
             String s1 = getString(getRegisterValue(r1));
-            data.put(s0,s1);
+            if(virtualMachineDatabase != null){
+                virtualMachineDatabase.putCache(s0,s1);
+            }
         }else if(code == OpCode.GET_DATA){
             Register r0 = (Register) instruction.getOperand(0);
             Register r1 = (Register) instruction.getOperand(1);
             String s1 = getString(getRegisterValue(r1));
-            String s0 = data.get(s1);
-            if(s0 == null){
-                s0 = getBaseString(s1);
-            }
-            int stringAddress = 0;
-            if(s0 != null){
-                stringAddress = newString(s0);
-            }
+            String s0 = getBaseString(s1);
+            int stringAddress = newString(s0);
             setRegisterValue(r0,stringAddress);
         }else{
             throw new VirtualMachineException();
@@ -373,6 +370,9 @@ public class VirtualMachine {
         return stringArrayAddress;
     }
     public int newString(String value) {
+        if(value == null){
+            return 0;
+        }
         int stringAddress = newObject(1);
 
         int charArrayAddress = newArray(value.length());
@@ -440,16 +440,12 @@ public class VirtualMachine {
         return memory;
     }
 
-    public Map<String, String> getData() {
-        return data;
-    }
-
-    public BaseData baseData;
+    public VirtualMachineDatabase virtualMachineDatabase;
     public String getBaseString(String key){
-        if(baseData == null){
+        if(virtualMachineDatabase == null){
             return null;
         }
-        return baseData.getBaseData(key);
+        return virtualMachineDatabase.get(key);
     }
 
     public void setArgsAddress(int argsAddress) {
